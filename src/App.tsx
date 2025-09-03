@@ -90,6 +90,10 @@ export default function App() {
   // Enhanced Add Ideas state
   const [addSectionExpanded, setAddSectionExpanded] = useState(true);
   const [message, setMessage] = useState('');
+  
+  // Edit functionality state
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<Idea>>({});
 
   // Load sample data on mount
   useEffect(() => {
@@ -157,6 +161,51 @@ export default function App() {
   const handleDeleteIdea = (id: string) => {
     setIdeas(prev => prev.filter(idea => idea.id !== id));
     showMessage('Idea deleted');
+  };
+
+  // Edit functionality
+  const handleEditIdea = (idea: Idea) => {
+    setEditingId(idea.id);
+    setEditForm({
+      title: idea.title,
+      notes: idea.notes || '',
+      reach: idea.reach,
+      impact: idea.impact,
+      confidence: idea.confidence,
+      effort: idea.effort,
+      tags: idea.tags
+    });
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingId || !editForm.title) return;
+    
+    setIdeas(prev => prev.map(idea => {
+      if (idea.id === editingId) {
+        const updatedIdea = {
+          ...idea,
+          title: editForm.title || idea.title,
+          notes: editForm.notes || '',
+          reach: editForm.reach || idea.reach,
+          impact: editForm.impact || idea.impact,
+          confidence: editForm.confidence || idea.confidence,
+          effort: editForm.effort || idea.effort,
+          tags: editForm.tags || idea.tags
+        };
+        updatedIdea.score = calculateScore(updatedIdea, model);
+        return updatedIdea;
+      }
+      return idea;
+    }));
+    
+    setEditingId(null);
+    setEditForm({});
+    showMessage('Idea updated successfully!');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditForm({});
   };
 
   const handleExportCSV = () => {
@@ -882,30 +931,135 @@ export default function App() {
               </thead>
               <tbody>
                 {sortedIdeas.map((idea, index) => (
-                  <tr key={idea.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <tr key={idea.id} style={{ 
+                    borderBottom: '1px solid #f1f5f9',
+                    backgroundColor: editingId === idea.id ? '#fef3c7' : 'transparent'
+                  }}>
                     <td style={{ padding: '0.75rem', fontSize: '0.875rem' }}>
-                      <div>
-                        <div style={{ fontWeight: '500', color: '#1e293b' }}>{idea.title}</div>
-                        {idea.notes && (
-                          <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
-                            {idea.notes}
-                          </div>
-                        )}
-                      </div>
+                      {editingId === idea.id ? (
+                        <div>
+                          <input
+                            type="text"
+                            value={editForm.title || ''}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                            style={{
+                              width: '100%',
+                              padding: '0.25rem',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.875rem',
+                              fontWeight: '500',
+                              marginBottom: '0.25rem'
+                            }}
+                            placeholder="Idea title"
+                          />
+                          <textarea
+                            value={editForm.notes || ''}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, notes: e.target.value }))}
+                            style={{
+                              width: '100%',
+                              padding: '0.25rem',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.75rem',
+                              resize: 'vertical',
+                              minHeight: '2rem'
+                            }}
+                            placeholder="Notes (optional)"
+                          />
+                        </div>
+                      ) : (
+                        <div>
+                          <div style={{ fontWeight: '500', color: '#1e293b' }}>{idea.title}</div>
+                          {idea.notes && (
+                            <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
+                              {idea.notes}
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </td>
                     {model === 'RICE' && (
                       <td style={{ padding: '0.75rem', fontSize: '0.875rem', color: '#374151' }}>
-                        {idea.reach?.toLocaleString() || '-'}
+                        {editingId === idea.id ? (
+                          <input
+                            type="number"
+                            value={editForm.reach || ''}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, reach: parseInt(e.target.value) || 0 }))}
+                            style={{
+                              width: '80px',
+                              padding: '0.25rem',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.875rem'
+                            }}
+                            min="0"
+                          />
+                        ) : (
+                          idea.reach?.toLocaleString() || '-'
+                        )}
                       </td>
                     )}
                     <td style={{ padding: '0.75rem', fontSize: '0.875rem', color: '#374151' }}>
-                      {idea.impact}
+                      {editingId === idea.id ? (
+                        <input
+                          type="number"
+                          value={editForm.impact || ''}
+                          onChange={(e) => setEditForm(prev => ({ ...prev, impact: parseInt(e.target.value) || 1 }))}
+                          style={{
+                            width: '60px',
+                            padding: '0.25rem',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '0.25rem',
+                            fontSize: '0.875rem'
+                          }}
+                          min="1"
+                          max="5"
+                        />
+                      ) : (
+                        idea.impact
+                      )}
                     </td>
                     <td style={{ padding: '0.75rem', fontSize: '0.875rem', color: '#374151' }}>
-                      {(idea.confidence * 100).toFixed(0)}%
+                      {editingId === idea.id ? (
+                        <input
+                          type="number"
+                          value={editForm.confidence ? (editForm.confidence * 100).toFixed(0) : ''}
+                          onChange={(e) => setEditForm(prev => ({ ...prev, confidence: (parseInt(e.target.value) || 0) / 100 }))}
+                          style={{
+                            width: '60px',
+                            padding: '0.25rem',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '0.25rem',
+                            fontSize: '0.875rem'
+                          }}
+                          min="0"
+                          max="100"
+                        />
+                      ) : (
+                        `${(idea.confidence * 100).toFixed(0)}%`
+                      )}
                     </td>
                     <td style={{ padding: '0.75rem', fontSize: '0.875rem', color: '#374151' }}>
-                      {idea.effort}
+                      {editingId === idea.id ? (
+                        <input
+                          type="number"
+                          value={editForm.effort || ''}
+                          onChange={(e) => setEditForm(prev => ({ ...prev, effort: parseFloat(e.target.value) || 1 }))}
+                          style={{
+                            width: '60px',
+                            padding: '0.25rem',
+                            border: '1px solid #d1d5db',
+                            borderRadius: '0.25rem',
+                            fontSize: '0.875rem'
+                          }}
+                          min="0.1"
+                          max="10"
+                          step="0.1"
+                        />
+                      ) : (
+                        idea.effort
+                      )}
                     </td>
                     <td style={{ padding: '0.75rem', fontSize: '0.875rem' }}>
                       <span style={{
@@ -937,20 +1091,72 @@ export default function App() {
                       </div>
                     </td>
                     <td style={{ padding: '0.75rem' }}>
-                      <button
-                        onClick={() => handleDeleteIdea(idea.id)}
-                        style={{
-                          padding: '0.25rem 0.5rem',
-                          backgroundColor: '#ef4444',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '0.25rem',
-                          cursor: 'pointer',
-                          fontSize: '0.75rem'
-                        }}
-                      >
-                        Delete
-                      </button>
+                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                        {editingId === idea.id ? (
+                          <>
+                            <button
+                              onClick={handleSaveEdit}
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                backgroundColor: '#059669',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '0.25rem',
+                                cursor: 'pointer',
+                                fontSize: '0.75rem'
+                              }}
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={handleCancelEdit}
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                backgroundColor: '#6b7280',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '0.25rem',
+                                cursor: 'pointer',
+                                fontSize: '0.75rem'
+                              }}
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => handleEditIdea(idea)}
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                backgroundColor: '#457B9D',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '0.25rem',
+                                cursor: 'pointer',
+                                fontSize: '0.75rem',
+                                marginRight: '0.25rem'
+                              }}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteIdea(idea.id)}
+                              style={{
+                                padding: '0.25rem 0.5rem',
+                                backgroundColor: '#ef4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '0.25rem',
+                                cursor: 'pointer',
+                                fontSize: '0.75rem'
+                              }}
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

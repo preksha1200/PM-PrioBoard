@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { generateAIScores } from './services/aiService';
+import ProductProfile from './ProductProfile';
 
 // Types
 interface Idea {
@@ -77,7 +78,8 @@ function createSampleIdeas(): Idea[] {
 
 export default function App() {
   const [ideas, setIdeas] = useState<Idea[]>([]);
-  const [model, setModel] = useState<ScoringModel>('RICE');
+  const [model, setModel] = useState<ScoringModel>('ICE');
+  const [currentPage, setCurrentPage] = useState<'main' | 'product-profile'>('main');
   const [newIdea, setNewIdea] = useState({
     title: '',
     notes: '',
@@ -512,11 +514,18 @@ export default function App() {
 
   const sortedIdeas = [...ideas].sort((a, b) => b.score - a.score);
 
+  // Handle page navigation
+  if (currentPage === 'product-profile') {
+    return (
+      <ProductProfile onBack={() => setCurrentPage('main')} />
+    );
+  }
+
   return (
-    <div style={{ 
+    <div style={{
       minHeight: '100vh',
       backgroundColor: '#f8fafc',
-      fontFamily: 'Inter, sans-serif'
+      fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
     }}>
       {/* Header */}
       <header style={{
@@ -611,7 +620,7 @@ export default function App() {
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             {/* Product Profile Button */}
             <button
-              onClick={() => alert('Product Profile functionality coming soon!')}
+              onClick={() => setCurrentPage('product-profile')}
               style={{
                 display: 'flex',
                 alignItems: 'center',

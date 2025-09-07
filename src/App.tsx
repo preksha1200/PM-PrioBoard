@@ -533,15 +533,15 @@ export default function App() {
           alignItems: 'center',
           width: '100%'
         }}>
-          <h1 style={{
-            fontSize: '1.5rem',
-            fontWeight: 'bold',
-            color: '#1e293b'
-          }}>
-            PM PrioBoard
-          </h1>
-          
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <h1 style={{
+              fontSize: '1.5rem',
+              fontWeight: 'bold',
+              color: '#1e293b'
+            }}>
+              PM PrioBoard
+            </h1>
+            
             {/* Beautiful ICE/RICE Toggle Button */}
             <div style={{
               position: 'relative',
@@ -606,10 +606,47 @@ export default function App() {
                 RICE
               </button>
             </div>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            {/* Product Profile Button */}
+            <button
+              onClick={() => alert('Product Profile functionality coming soon!')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.5rem 1rem',
+                backgroundColor: '#1f2937',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.375rem',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                transition: 'background-color 0.2s ease-in-out'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#374151';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#1f2937';
+              }}
+            >
+              {/* User Profile Icon */}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              Product Profile
+            </button>
             
             <button
               onClick={handleExportCSV}
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
                 padding: '0.5rem 1rem',
                 backgroundColor: '#10b981',
                 color: 'white',
@@ -617,9 +654,22 @@ export default function App() {
                 borderRadius: '0.375rem',
                 cursor: 'pointer',
                 fontSize: '0.875rem',
-                fontWeight: '500'
+                fontWeight: '500',
+                transition: 'background-color 0.2s ease-in-out'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#059669';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#10b981';
               }}
             >
+              {/* Export/Download Icon */}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17,8 12,3 7,8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
               Export CSV
             </button>
           </div>
@@ -1147,6 +1197,14 @@ export default function App() {
                             fontStyle: 'italic'
                           }}>
                             <strong>AI Reasoning:</strong> {(idea as any).reasoning}
+                            <div style={{
+                              marginTop: '0.25rem',
+                              fontSize: '0.625rem',
+                              color: '#64748b',
+                              fontWeight: '500'
+                            }}>
+                              {(idea as any).isGeminiResponse ? '🤖 Powered by Google Gemini 2.0 Flash' : '⚡ Enhanced Fallback System'}
+                            </div>
                           </div>
                         )}
                         {idea.tags && idea.tags.length > 0 && (

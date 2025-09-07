@@ -7,6 +7,7 @@ interface AIScoreResult {
   effort: number;
   reasoning: string;
   source?: string;
+  isGeminiResponse?: boolean;
 }
 
 // Enhanced content analysis for intelligent fallback scoring
@@ -154,21 +155,20 @@ const callGeminiAPI = async (title: string, notes: string): Promise<AIScoreResul
     const result = await genAI.models.generateContent({
       model: 'gemini-2.0-flash-exp',
       contents: prompt,
-      config: {
-        temperature: 0.3,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 1024,
-      },
     });
-
-    const text = result.text || '';
+    
+    const text = result.text;
     
     if (!text) {
       throw new Error('Empty response from Gemini API');
     }
     
-    return parseGeminiResponse(text);
+    const parsedResult = parseGeminiResponse(text);
+    // Mark as Gemini response for transparency display
+    return {
+      ...parsedResult,
+      isGeminiResponse: true
+    };
   } catch (error) {
     console.error('Gemini API error:', error);
     return null;

@@ -707,7 +707,6 @@ export default function App() {
         margin: '0 auto',
         padding: '2rem 2rem',
         display: 'grid',
-        gridTemplateColumns: '1.3fr 1fr',
         gap: '3rem'
       }}>
         {/* Enhanced Add Ideas Section */}
@@ -1304,273 +1303,6 @@ export default function App() {
             </div>
           )}
         </div>
-
-        {/* Impact vs Effort Quadrant Chart */}
-        <div style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '8px',
-          padding: '1.5rem',
-          height: 'fit-content'
-        }}>
-          <h2 style={{
-            fontSize: '1.25rem',
-            fontWeight: '600',
-            marginBottom: '1.5rem',
-            color: '#1D3557',
-            textAlign: 'center'
-          }}>
-            Impact vs Effort Analysis
-          </h2>
-          
-          {ideas.length > 0 ? (
-            <div style={{
-              width: '100%',
-              height: '500px',
-              position: 'relative',
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: '6px',
-              padding: '2rem',
-              margin: '0 auto'
-            }}>
-              {/* Grid lines for better visual structure */}
-              <div style={{
-                position: 'absolute',
-                top: '25%',
-                left: '2rem',
-                right: '2rem',
-                height: '1px',
-                backgroundColor: '#e2e8f0',
-                zIndex: 1
-              }} />
-              <div style={{
-                position: 'absolute',
-                top: '75%',
-                left: '2rem',
-                right: '2rem',
-                height: '1px',
-                backgroundColor: '#e2e8f0',
-                zIndex: 1
-              }} />
-              <div style={{
-                position: 'absolute',
-                top: '2rem',
-                bottom: '2rem',
-                left: '25%',
-                width: '1px',
-                backgroundColor: '#e2e8f0',
-                zIndex: 1
-              }} />
-              <div style={{
-                position: 'absolute',
-                top: '2rem',
-                bottom: '2rem',
-                left: '75%',
-                width: '1px',
-                backgroundColor: '#e2e8f0',
-                zIndex: 1
-              }} />
-              
-              {/* Main quadrant lines (thicker) */}
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '2rem',
-                right: '2rem',
-                height: '2px',
-                backgroundColor: '#cbd5e1',
-                zIndex: 2
-              }} />
-              <div style={{
-                position: 'absolute',
-                top: '2rem',
-                bottom: '2rem',
-                left: '50%',
-                width: '2px',
-                backgroundColor: '#cbd5e1',
-                zIndex: 2
-              }} />
-              
-              {/* Quadrant labels */}
-              <div style={{
-                position: 'absolute',
-                top: '15px',
-                left: '15px',
-                fontSize: '0.8rem',
-                color: '#059669',
-                fontWeight: '600',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                padding: '0.25rem 0.5rem',
-                borderRadius: '0.25rem',
-                border: '1px solid #d1fae5'
-              }}>
-                🎯 Quick Wins
-              </div>
-              <div style={{
-                position: 'absolute',
-                top: '15px',
-                right: '15px',
-                fontSize: '0.8rem',
-                color: '#dc2626',
-                fontWeight: '600',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                padding: '0.25rem 0.5rem',
-                borderRadius: '0.25rem',
-                border: '1px solid #fecaca',
-                textAlign: 'right'
-              }}>
-                🚀 Major Projects
-              </div>
-              <div style={{
-                position: 'absolute',
-                bottom: '15px',
-                left: '15px',
-                fontSize: '0.8rem',
-                color: '#64748b',
-                fontWeight: '600',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                padding: '0.25rem 0.5rem',
-                borderRadius: '0.25rem',
-                border: '1px solid #e2e8f0'
-              }}>
-                💭 Fill-ins
-              </div>
-              <div style={{
-                position: 'absolute',
-                bottom: '15px',
-                right: '15px',
-                fontSize: '0.8rem',
-                color: '#dc2626',
-                fontWeight: '600',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                padding: '0.25rem 0.5rem',
-                borderRadius: '0.25rem',
-                border: '1px solid #fecaca',
-                textAlign: 'right'
-              }}>
-                ❌ Avoid
-              </div>
-              
-              {/* Data points */}
-              {ideas.map((idea, index) => {
-                const impacts = ideas.map(i => i.impact);
-                const efforts = ideas.map(i => i.effort);
-                
-                const minImpact = Math.min(...impacts);
-                const maxImpact = Math.max(...impacts);
-                const minEffort = Math.min(...efforts);
-                const maxEffort = Math.max(...efforts);
-                
-                const impactRange = maxImpact - minImpact || 1;
-                const effortRange = maxEffort - minEffort || 1;
-                
-                const normalizedEffort = (idea.effort - minEffort) / effortRange;
-                const normalizedImpact = (idea.impact - minImpact) / impactRange;
-                
-                const x = 15 + (normalizedEffort * 70);
-                const y = 85 - (normalizedImpact * 70);
-                
-                const colors = ['#E63946', '#457B9D', '#A8DADC', '#CD8B76', '#1D3557', '#F77F00', '#FCBF49'];
-                const color = colors[index % colors.length];
-                
-                const pointSize = 14 + (idea.score / Math.max(...ideas.map(i => i.score))) * 6;
-                
-                return (
-                  <div
-                    key={idea.id}
-                    style={{
-                      position: 'absolute',
-                      left: `${x}%`,
-                      top: `${y}%`,
-                      width: `${pointSize}px`,
-                      height: `${pointSize}px`,
-                      backgroundColor: color,
-                      borderRadius: '50%',
-                      border: '3px solid white',
-                      boxShadow: '0 3px 8px rgba(0,0,0,0.15)',
-                      transform: 'translate(-50%, -50%)',
-                      cursor: 'pointer',
-                      zIndex: 3,
-                      transition: 'all 0.2s ease'
-                    }}
-                    title={`${idea.title}\nImpact: ${idea.impact}, Effort: ${idea.effort}\nScore: ${Math.round(idea.score)}`}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.2)';
-                      e.currentTarget.style.zIndex = '4';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
-                      e.currentTarget.style.zIndex = '3';
-                    }}
-                  />
-                );
-              })}
-              
-              {/* Axis labels */}
-              <div style={{
-                position: 'absolute',
-                bottom: '-35px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                fontSize: '0.875rem',
-                color: '#374151',
-                fontWeight: '600',
-                backgroundColor: 'white',
-                padding: '0.5rem 1rem',
-                borderRadius: '0.375rem',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                border: '1px solid #e2e8f0'
-              }}>
-                Effort →
-              </div>
-              <div style={{
-                position: 'absolute',
-                left: '-60px',
-                top: '50%',
-                transform: 'translateY(-50%) rotate(-90deg)',
-                fontSize: '0.875rem',
-                color: '#374151',
-                fontWeight: '600',
-                backgroundColor: 'white',
-                padding: '0.5rem 1rem',
-                borderRadius: '0.375rem',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                border: '1px solid #e2e8f0'
-              }}>
-                Impact →
-              </div>
-            </div>
-          ) : (
-            <div style={{
-              height: '400px',
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#64748b'
-            }}>
-              No data to display
-            </div>
-          )}
-          
-          {/* Legend */}
-          <div style={{
-            marginTop: '1.5rem',
-            fontSize: '0.8rem',
-            color: '#64748b',
-            textAlign: 'center',
-            backgroundColor: 'white',
-            padding: '0.75rem 1.5rem',
-            borderRadius: '0.5rem',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-          }}>
-            Point size reflects {model} score • Hover for details
-          </div>
-        </div>
       </div>
 
       {/* Ideas Table - Full Width Below */}
@@ -1938,6 +1670,279 @@ export default function App() {
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      </div>
+      
+      {/* Impact vs Effort Analysis Section */}
+      <div style={{
+        maxWidth: '1400px',
+        margin: '2rem auto 0 auto',
+        padding: '0 2rem'
+      }}>
+        <div style={{
+          backgroundColor: '#ffffff',
+          border: '1px solid #e2e8f0',
+          borderRadius: '8px',
+          padding: '1.5rem',
+          height: 'fit-content'
+        }}>
+          <h2 style={{
+            fontSize: '1.25rem',
+            fontWeight: '600',
+            marginBottom: '1.5rem',
+            color: '#1D3557',
+            textAlign: 'center'
+          }}>
+            Impact vs Effort Analysis
+          </h2>
+          
+          {ideas.length > 0 ? (
+            <div style={{
+              width: '100%',
+              height: '500px',
+              position: 'relative',
+              backgroundColor: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: '6px',
+              padding: '2rem',
+              margin: '0 auto'
+            }}>
+              {/* Grid lines for better visual structure */}
+              <div style={{
+                position: 'absolute',
+                top: '25%',
+                left: '2rem',
+                right: '2rem',
+                height: '1px',
+                backgroundColor: '#e2e8f0',
+                zIndex: 1
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: '75%',
+                left: '2rem',
+                right: '2rem',
+                height: '1px',
+                backgroundColor: '#e2e8f0',
+                zIndex: 1
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: '2rem',
+                bottom: '2rem',
+                left: '25%',
+                width: '1px',
+                backgroundColor: '#e2e8f0',
+                zIndex: 1
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: '2rem',
+                bottom: '2rem',
+                left: '75%',
+                width: '1px',
+                backgroundColor: '#e2e8f0',
+                zIndex: 1
+              }} />
+              
+              {/* Main quadrant lines (thicker) */}
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '2rem',
+                right: '2rem',
+                height: '2px',
+                backgroundColor: '#cbd5e1',
+                zIndex: 2
+              }} />
+              <div style={{
+                position: 'absolute',
+                top: '2rem',
+                bottom: '2rem',
+                left: '50%',
+                width: '2px',
+                backgroundColor: '#cbd5e1',
+                zIndex: 2
+              }} />
+              
+              {/* Quadrant labels */}
+              <div style={{
+                position: 'absolute',
+                top: '15px',
+                left: '15px',
+                fontSize: '0.8rem',
+                color: '#059669',
+                fontWeight: '600',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                padding: '0.25rem 0.5rem',
+                borderRadius: '0.25rem',
+                border: '1px solid #d1fae5'
+              }}>
+                🎯 Quick Wins
+              </div>
+              <div style={{
+                position: 'absolute',
+                top: '15px',
+                right: '15px',
+                fontSize: '0.8rem',
+                color: '#dc2626',
+                fontWeight: '600',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                padding: '0.25rem 0.5rem',
+                borderRadius: '0.25rem',
+                border: '1px solid #fecaca',
+                textAlign: 'right'
+              }}>
+                🚀 Major Projects
+              </div>
+              <div style={{
+                position: 'absolute',
+                bottom: '15px',
+                left: '15px',
+                fontSize: '0.8rem',
+                color: '#64748b',
+                fontWeight: '600',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                padding: '0.25rem 0.5rem',
+                borderRadius: '0.25rem',
+                border: '1px solid #e2e8f0'
+              }}>
+                💭 Fill-ins
+              </div>
+              <div style={{
+                position: 'absolute',
+                bottom: '15px',
+                right: '15px',
+                fontSize: '0.8rem',
+                color: '#dc2626',
+                fontWeight: '600',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                padding: '0.25rem 0.5rem',
+                borderRadius: '0.25rem',
+                border: '1px solid #fecaca',
+                textAlign: 'right'
+              }}>
+                ❌ Avoid
+              </div>
+              
+              {/* Data points */}
+              {ideas.map((idea, index) => {
+                const impacts = ideas.map(i => i.impact);
+                const efforts = ideas.map(i => i.effort);
+                
+                const minImpact = Math.min(...impacts);
+                const maxImpact = Math.max(...impacts);
+                const minEffort = Math.min(...efforts);
+                const maxEffort = Math.max(...efforts);
+                
+                const impactRange = maxImpact - minImpact || 1;
+                const effortRange = maxEffort - minEffort || 1;
+                
+                const normalizedEffort = (idea.effort - minEffort) / effortRange;
+                const normalizedImpact = (idea.impact - minImpact) / impactRange;
+                
+                const x = 15 + (normalizedEffort * 70);
+                const y = 85 - (normalizedImpact * 70);
+                
+                const colors = ['#E63946', '#457B9D', '#A8DADC', '#CD8B76', '#1D3557', '#F77F00', '#FCBF49'];
+                const color = colors[index % colors.length];
+                
+                const pointSize = 14 + (idea.score / Math.max(...ideas.map(i => i.score))) * 6;
+                
+                return (
+                  <div
+                    key={idea.id}
+                    style={{
+                      position: 'absolute',
+                      left: `${x}%`,
+                      top: `${y}%`,
+                      width: `${pointSize}px`,
+                      height: `${pointSize}px`,
+                      backgroundColor: color,
+                      borderRadius: '50%',
+                      border: '3px solid white',
+                      boxShadow: '0 3px 8px rgba(0,0,0,0.15)',
+                      transform: 'translate(-50%, -50%)',
+                      cursor: 'pointer',
+                      zIndex: 3,
+                      transition: 'all 0.2s ease'
+                    }}
+                    title={`${idea.title}\nImpact: ${idea.impact}, Effort: ${idea.effort}\nScore: ${Math.round(idea.score)}`}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                      e.currentTarget.style.zIndex = '4';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
+                      e.currentTarget.style.zIndex = '3';
+                    }}
+                  />
+                );
+              })}
+              
+              {/* Axis labels */}
+              <div style={{
+                position: 'absolute',
+                bottom: '-35px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                fontSize: '0.875rem',
+                color: '#374151',
+                fontWeight: '600',
+                backgroundColor: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '0.375rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                border: '1px solid #e2e8f0'
+              }}>
+                Effort →
+              </div>
+              <div style={{
+                position: 'absolute',
+                left: '-60px',
+                top: '50%',
+                transform: 'translateY(-50%) rotate(-90deg)',
+                fontSize: '0.875rem',
+                color: '#374151',
+                fontWeight: '600',
+                backgroundColor: 'white',
+                padding: '0.5rem 1rem',
+                borderRadius: '0.375rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                border: '1px solid #e2e8f0'
+              }}>
+                Impact →
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              height: '400px',
+              backgroundColor: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#64748b'
+            }}>
+              No data to display
+            </div>
+          )}
+          
+          {/* Legend */}
+          <div style={{
+            marginTop: '1.5rem',
+            fontSize: '0.8rem',
+            color: '#64748b',
+            textAlign: 'center',
+            backgroundColor: 'white',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '0.5rem',
+            border: '1px solid #e2e8f0',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }}>
+            Point size reflects {model} score • Hover for details
           </div>
         </div>
       </div>

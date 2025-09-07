@@ -312,56 +312,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
     updateFunnelChannels('touchpoints', newTouchpoints);
   };
 
-  // Baseline Volumes functions
-  const updateBaselineVolumes = (field: keyof ProductProfileData['baselineVolumes'], value: string | BaselineEvent[]) => {
-    setProfileData(prev => ({
-      ...prev,
-      baselineVolumes: {
-        ...prev.baselineVolumes,
-        [field]: value
-      }
-    }));
-  };
 
-  const addBaselineEvent = () => {
-    const newEvent: BaselineEvent = {
-      id: Date.now().toString(),
-      name: '',
-      dailyVolume: '',
-      weeklyVolume: ''
-    };
-    setProfileData(prev => ({
-      ...prev,
-      baselineVolumes: {
-        ...prev.baselineVolumes,
-        baselineEvents: [...prev.baselineVolumes.baselineEvents, newEvent]
-      }
-    }));
-    showMessage('Baseline event added successfully!');
-  };
-
-  const updateBaselineEvent = (id: string, field: keyof BaselineEvent, value: string) => {
-    setProfileData(prev => ({
-      ...prev,
-      baselineVolumes: {
-        ...prev.baselineVolumes,
-        baselineEvents: prev.baselineVolumes.baselineEvents.map(event =>
-          event.id === id ? { ...event, [field]: value } : event
-        )
-      }
-    }));
-  };
-
-  const removeBaselineEvent = (id: string) => {
-    setProfileData(prev => ({
-      ...prev,
-      baselineVolumes: {
-        ...prev.baselineVolumes,
-        baselineEvents: prev.baselineVolumes.baselineEvents.filter(event => event.id !== id)
-      }
-    }));
-    showMessage('Baseline event removed successfully!');
-  };
 
   // Team & Effort Units functions
   const updateTeamEffortUnits = (field: keyof ProductProfileData['teamEffortUnits'], value: string) => {
@@ -374,31 +325,9 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
     }));
   };
 
-  // Custom Impact Ladder functions
-  const updateImpactLevel = (index: number, field: keyof ImpactLevel, value: string | number) => {
-    setProfileData(prev => ({
-      ...prev,
-      customImpactLadder: {
-        ...prev.customImpactLadder,
-        impactLevels: prev.customImpactLadder.impactLevels.map((level, i) =>
-          i === index ? { ...level, [field]: value } : level
-        )
-      }
-    }));
-  };
 
-  // Confidence Rubric functions
-  const updateConfidenceLevel = (index: number, field: keyof ConfidenceLevel, value: string) => {
-    setProfileData(prev => ({
-      ...prev,
-      confidenceRubric: {
-        ...prev.confidenceRubric,
-        confidenceLevels: prev.confidenceRubric.confidenceLevels.map((level, i) =>
-          i === index ? { ...level, [field]: value } : level
-        )
-      }
-    }));
-  };
+
+
 
   // Constraints & Risk functions
   const updateConstraintsRisk = (field: keyof ProductProfileData['constraintsRisk'], value: string | boolean) => {
@@ -437,7 +366,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
             fontWeight: 'bold',
             color: '#1e293b'
           }}>
-            Product Profile
+            PM PrioBoard
           </h1>
           
           <button
@@ -468,7 +397,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
               <path d="M19 12H5"/>
               <path d="M12 19l-7-7 7-7"/>
             </svg>
-            Back to PM PrioBoard
+            Back to Main
           </button>
         </div>
       </header>
@@ -498,6 +427,21 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
         display: 'grid',
         gap: '2rem'
       }}>
+        {/* Product Profile Heading */}
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '1rem'
+        }}>
+          <h1 style={{
+            fontSize: '2rem',
+            fontWeight: '700',
+            color: '#1D3557',
+            margin: '0'
+          }}>
+            Product Profile
+          </h1>
+        </div>
+
         {/* Product Basics & Metrics KPIs - Two Column Layout */}
         <div style={{
           display: 'grid',
@@ -1613,241 +1557,14 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
           </div>
         </div>
 
-        {/* Baseline Volumes & Team Effort Units - Two Column Layout */}
+
+
+        {/* Team & Effort Units and Constraints & Risk - Two Column Layout */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '2rem'
         }}>
-          {/* Baseline Volumes Section */}
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '0.5rem',
-            padding: '2rem',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-          }}>
-          <h2 style={{
-            fontSize: '1.25rem',
-            fontWeight: '600',
-            color: '#1D3557',
-            marginBottom: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
-            {/* Baseline Icon */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 3v18h18"/>
-              <path d="M7 12l3 3 7-7"/>
-            </svg>
-            Baseline Volumes
-          </h2>
-
-          <div style={{ display: 'grid', gap: '1.5rem' }}>
-            {/* Key Events */}
-            <div>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '1rem'
-              }}>
-                <h3 style={{
-                  fontSize: '1rem',
-                  fontWeight: '600',
-                  color: '#457B9D'
-                }}>
-                  Key Events Typically Impacted
-                </h3>
-                
-                <button
-                  onClick={addBaselineEvent}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    padding: '0.5rem 1rem',
-                    backgroundColor: '#10b981',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '0.375rem',
-                    cursor: 'pointer',
-                    fontSize: '0.875rem',
-                    fontWeight: '500'
-                  }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 5v14"/>
-                    <path d="M5 12h14"/>
-                  </svg>
-                  Add Event
-                </button>
-              </div>
-
-              {profileData.baselineVolumes.baselineEvents.length === 0 ? (
-                <div style={{
-                  textAlign: 'center',
-                  padding: '2rem',
-                  color: '#6b7280',
-                  fontStyle: 'italic'
-                }}>
-                  No baseline events added yet. Click "Add Event" to get started.
-                </div>
-              ) : (
-                <div style={{ display: 'grid', gap: '1rem' }}>
-                  {profileData.baselineVolumes.baselineEvents.map((event) => (
-                    <div key={event.id} style={{
-                      display: 'grid',
-                      gap: '1rem',
-                      gridTemplateColumns: '2fr 1fr 1fr auto',
-                      alignItems: 'end',
-                      padding: '1rem',
-                      backgroundColor: '#f8fafc',
-                      borderRadius: '0.375rem',
-                      border: '1px solid #e2e8f0'
-                    }}>
-                      <div>
-                        <label style={{
-                          display: 'block',
-                          fontSize: '0.75rem',
-                          fontWeight: '500',
-                          color: '#6b7280',
-                          marginBottom: '0.25rem'
-                        }}>
-                          Event Name
-                        </label>
-                        <input
-                          type="text"
-                          value={event.name}
-                          onChange={(e) => updateBaselineEvent(event.id, 'name', e.target.value)}
-                          placeholder="e.g., User Signups, Orders, Conversions"
-                          style={{
-                            width: '100%',
-                            padding: '0.5rem',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '0.375rem',
-                            fontSize: '0.875rem',
-                            outline: 'none'
-                          }}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label style={{
-                          display: 'block',
-                          fontSize: '0.75rem',
-                          fontWeight: '500',
-                          color: '#6b7280',
-                          marginBottom: '0.25rem'
-                        }}>
-                          Daily Volume
-                        </label>
-                        <input
-                          type="text"
-                          value={event.dailyVolume}
-                          onChange={(e) => updateBaselineEvent(event.id, 'dailyVolume', e.target.value)}
-                          placeholder="e.g., 150"
-                          style={{
-                            width: '100%',
-                            padding: '0.5rem',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '0.375rem',
-                            fontSize: '0.875rem',
-                            outline: 'none'
-                          }}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label style={{
-                          display: 'block',
-                          fontSize: '0.75rem',
-                          fontWeight: '500',
-                          color: '#6b7280',
-                          marginBottom: '0.25rem'
-                        }}>
-                          Weekly Volume
-                        </label>
-                        <input
-                          type="text"
-                          value={event.weeklyVolume}
-                          onChange={(e) => updateBaselineEvent(event.id, 'weeklyVolume', e.target.value)}
-                          placeholder="e.g., 1,050"
-                          style={{
-                            width: '100%',
-                            padding: '0.5rem',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '0.375rem',
-                            fontSize: '0.875rem',
-                            outline: 'none'
-                          }}
-                        />
-                      </div>
-                      
-                      <button
-                        onClick={() => removeBaselineEvent(event.id)}
-                        style={{
-                          padding: '0.5rem',
-                          backgroundColor: '#ef4444',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '0.375rem',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                        title="Remove Event"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M3 6h18"/>
-                          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Baseline Metrics */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
-                Baseline Metrics for Measuring Impact
-              </label>
-              <textarea
-                value={profileData.baselineVolumes.baselineMetrics}
-                onChange={(e) => updateBaselineVolumes('baselineMetrics', e.target.value)}
-                placeholder="Describe your baseline metrics methodology, how you measure impact, and key performance indicators used for comparison"
-                rows={4}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  outline: 'none',
-                  transition: 'border-color 0.2s ease-in-out',
-                  resize: 'vertical'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = '#457B9D';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = '#d1d5db';
-                }}
-              />
-            </div>
-          </div>
-          </div>
-
           {/* Team & Effort Units Section */}
           <div style={{
             backgroundColor: 'white',
@@ -1855,330 +1572,192 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
             padding: '2rem',
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
           }}>
-          <h2 style={{
-            fontSize: '1.25rem',
-            fontWeight: '600',
-            color: '#1D3557',
-            marginBottom: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
-            {/* Team Icon */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            Team & Effort Units
-          </h2>
-
-          <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: '1fr 1fr' }}>
-            {/* Team Size and Person-Months */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
-                Team Size
-              </label>
-              <input
-                type="text"
-                value={profileData.teamEffortUnits.teamSize}
-                onChange={(e) => updateTeamEffortUnits('teamSize', e.target.value)}
-                placeholder="e.g., 8 people"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  outline: 'none'
-                }}
-              />
-            </div>
-            
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.5rem'
-              }}>
-                Monthly Person-Months Available
-              </label>
-              <input
-                type="text"
-                value={profileData.teamEffortUnits.monthlyPersonMonths}
-                onChange={(e) => updateTeamEffortUnits('monthlyPersonMonths', e.target.value)}
-                placeholder="e.g., 6 person-months"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '0.375rem',
-                  fontSize: '0.875rem',
-                  outline: 'none'
-                }}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: '1fr 1fr', marginTop: '1.5rem' }}>
-            {/* Effort Unit Preference */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.75rem'
-              }}>
-                Effort Unit Preference
-              </label>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <label style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  cursor: 'pointer'
-                }}>
-                  <input
-                    type="radio"
-                    name="effortUnit"
-                    value="person-weeks"
-                    checked={profileData.teamEffortUnits.effortUnitPreference === 'person-weeks'}
-                    onChange={(e) => updateTeamEffortUnits('effortUnitPreference', e.target.value as 'person-weeks' | 'person-months')}
-                    style={{
-                      width: '1rem',
-                      height: '1rem',
-                      accentColor: '#457B9D'
-                    }}
-                  />
-                  <span style={{ fontSize: '0.875rem', color: '#374151' }}>Person-weeks</span>
-                </label>
-                
-                <label style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  cursor: 'pointer'
-                }}>
-                  <input
-                    type="radio"
-                    name="effortUnit"
-                    value="person-months"
-                    checked={profileData.teamEffortUnits.effortUnitPreference === 'person-months'}
-                    onChange={(e) => updateTeamEffortUnits('effortUnitPreference', e.target.value as 'person-weeks' | 'person-months')}
-                    style={{
-                      width: '1rem',
-                      height: '1rem',
-                      accentColor: '#457B9D'
-                    }}
-                  />
-                  <span style={{ fontSize: '0.875rem', color: '#374151' }}>Person-months</span>
-                </label>
-              </div>
-            </div>
-
-            {/* Time Horizon */}
-            <div>
-              <label style={{
-                display: 'block',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                color: '#374151',
-                marginBottom: '0.75rem'
-              }}>
-                Time Horizon for Reach Calculations
-              </label>
-              <div style={{ display: 'flex', gap: '1rem' }}>
-                <label style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  cursor: 'pointer'
-                }}>
-                  <input
-                    type="radio"
-                    name="timeHorizon"
-                    value="per-week"
-                    checked={profileData.teamEffortUnits.timeHorizon === 'per-week'}
-                    onChange={(e) => updateTeamEffortUnits('timeHorizon', e.target.value as 'per-week' | 'per-month')}
-                    style={{
-                      width: '1rem',
-                      height: '1rem',
-                      accentColor: '#457B9D'
-                    }}
-                  />
-                  <span style={{ fontSize: '0.875rem', color: '#374151' }}>Per-week</span>
-                </label>
-                
-                <label style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  cursor: 'pointer'
-                }}>
-                  <input
-                    type="radio"
-                    name="timeHorizon"
-                    value="per-month"
-                    checked={profileData.teamEffortUnits.timeHorizon === 'per-month'}
-                    onChange={(e) => updateTeamEffortUnits('timeHorizon', e.target.value as 'per-week' | 'per-month')}
-                    style={{
-                      width: '1rem',
-                      height: '1rem',
-                      accentColor: '#457B9D'
-                    }}
-                  />
-                  <span style={{ fontSize: '0.875rem', color: '#374151' }}>Per-month</span>
-                </label>
-              </div>
-            </div>
-          </div>
-          </div>
-        </div>
-
-        {/* Confidence Rubric & Constraints Risk - Two Column Layout */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '2rem'
-        }}>
-          {/* Confidence Rubric Section */}
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '0.5rem',
-            padding: '2rem',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-          }}>
-          <h2 style={{
-            fontSize: '1.25rem',
-            fontWeight: '600',
-            color: '#1D3557',
-            marginBottom: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
-            {/* Confidence Icon */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 12l2 2 4-4"/>
-              <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c2.35 0 4.48.9 6.08 2.38"/>
-            </svg>
-            Confidence Rubric
-          </h2>
-
-          <div style={{
-            marginBottom: '1rem',
-            padding: '1rem',
-            backgroundColor: '#f0f9ff',
-            borderRadius: '0.375rem',
-            border: '1px solid #0ea5e9'
-          }}>
-            <p style={{
-              fontSize: '0.875rem',
-              color: '#0369a1',
-              margin: 0
+            <h2 style={{
+              fontSize: '1.25rem',
+              fontWeight: '600',
+              color: '#1D3557',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
             }}>
-              <strong>Define confidence level criteria:</strong> Customize what evidence corresponds to each confidence level. These definitions help ensure consistent confidence scoring across all ideas.
-            </p>
-          </div>
+              {/* Team Icon */}
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+              Team & Effort Units
+            </h2>
 
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {profileData.confidenceRubric.confidenceLevels.map((level, index) => (
-              <div key={level.name} style={{
-                display: 'grid',
-                gap: '1rem',
-                gridTemplateColumns: '120px 100px 1fr',
-                alignItems: 'center',
-                padding: '1rem',
-                backgroundColor: '#f8fafc',
-                borderRadius: '0.375rem',
-                border: '1px solid #e2e8f0'
-              }}>
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    color: '#6b7280',
-                    marginBottom: '0.25rem'
-                  }}>
-                    Confidence Level
-                  </label>
-                  <div style={{
-                    padding: '0.5rem',
-                    backgroundColor: 'white',
+            <div style={{ display: 'grid', gap: '1.5rem' }}>
+              {/* Team Size */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.5rem'
+                }}>
+                  Team Size
+                </label>
+                <input
+                  type="text"
+                  value={profileData.teamEffortUnits.teamSize}
+                  onChange={(e) => updateTeamEffortUnits('teamSize', e.target.value)}
+                  placeholder="e.g., 8 people"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
                     border: '1px solid #d1d5db',
                     borderRadius: '0.375rem',
                     fontSize: '0.875rem',
-                    fontWeight: '600',
-                    color: '#1f2937',
-                    textAlign: 'center'
-                  }}>
-                    {level.name}
-                  </div>
-                </div>
-                
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    color: '#6b7280',
-                    marginBottom: '0.25rem'
-                  }}>
-                    Range
-                  </label>
-                  <div style={{
-                    padding: '0.5rem',
-                    backgroundColor: 'white',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+              
+              {/* Monthly Person-Months */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.5rem'
+                }}>
+                  Monthly Person-Months Available
+                </label>
+                <input
+                  type="text"
+                  value={profileData.teamEffortUnits.monthlyPersonMonths}
+                  onChange={(e) => updateTeamEffortUnits('monthlyPersonMonths', e.target.value)}
+                  placeholder="e.g., 6 person-months"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
                     border: '1px solid #d1d5db',
                     borderRadius: '0.375rem',
                     fontSize: '0.875rem',
-                    fontWeight: '600',
-                    color: '#457B9D',
-                    textAlign: 'center'
-                  }}>
-                    {level.range}
-                  </div>
-                </div>
-                
-                <div>
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              {/* Effort Unit Preference */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.75rem'
+                }}>
+                  Effort Unit Preference
+                </label>
+                <div style={{ display: 'flex', gap: '1rem' }}>
                   <label style={{
-                    display: 'block',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    color: '#6b7280',
-                    marginBottom: '0.25rem'
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    cursor: 'pointer'
                   }}>
-                    Evidence Description
+                    <input
+                      type="radio"
+                      name="effortUnit"
+                      value="person-weeks"
+                      checked={profileData.teamEffortUnits.effortUnitPreference === 'person-weeks'}
+                      onChange={(e) => updateTeamEffortUnits('effortUnitPreference', e.target.value as 'person-weeks' | 'person-months')}
+                      style={{
+                        width: '1rem',
+                        height: '1rem',
+                        accentColor: '#457B9D'
+                      }}
+                    />
+                    <span style={{ fontSize: '0.875rem', color: '#374151' }}>Person-weeks</span>
                   </label>
-                  <input
-                    type="text"
-                    value={level.description}
-                    onChange={(e) => updateConfidenceLevel(index, 'description', e.target.value)}
-                    placeholder="e.g., A/B test or strong quantitative data"
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem',
-                      outline: 'none'
-                    }}
-                  />
+                  
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    cursor: 'pointer'
+                  }}>
+                    <input
+                      type="radio"
+                      name="effortUnit"
+                      value="person-months"
+                      checked={profileData.teamEffortUnits.effortUnitPreference === 'person-months'}
+                      onChange={(e) => updateTeamEffortUnits('effortUnitPreference', e.target.value as 'person-weeks' | 'person-months')}
+                      style={{
+                        width: '1rem',
+                        height: '1rem',
+                        accentColor: '#457B9D'
+                      }}
+                    />
+                    <span style={{ fontSize: '0.875rem', color: '#374151' }}>Person-months</span>
+                  </label>
                 </div>
               </div>
-            ))}
-          </div>
+
+              {/* Time Horizon */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#374151',
+                  marginBottom: '0.75rem'
+                }}>
+                  Time Horizon for Reach Calculations
+                </label>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    cursor: 'pointer'
+                  }}>
+                    <input
+                      type="radio"
+                      name="timeHorizon"
+                      value="per-week"
+                      checked={profileData.teamEffortUnits.timeHorizon === 'per-week'}
+                      onChange={(e) => updateTeamEffortUnits('timeHorizon', e.target.value as 'per-week' | 'per-month')}
+                      style={{
+                        width: '1rem',
+                        height: '1rem',
+                        accentColor: '#457B9D'
+                      }}
+                    />
+                    <span style={{ fontSize: '0.875rem', color: '#374151' }}>Per-week</span>
+                  </label>
+                  
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    cursor: 'pointer'
+                  }}>
+                    <input
+                      type="radio"
+                      name="timeHorizon"
+                      value="per-month"
+                      checked={profileData.teamEffortUnits.timeHorizon === 'per-month'}
+                      onChange={(e) => updateTeamEffortUnits('timeHorizon', e.target.value as 'per-week' | 'per-month')}
+                      style={{
+                        width: '1rem',
+                        height: '1rem',
+                        accentColor: '#457B9D'
+                      }}
+                    />
+                    <span style={{ fontSize: '0.875rem', color: '#374151' }}>Per-month</span>
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Constraints & Risk Section */}
@@ -2363,136 +1942,6 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
             </div>
           </div>
         </div>
-
-        {/* Custom Impact Ladder Section */}
-        <div style={{
-          backgroundColor: 'white',
-          borderRadius: '0.5rem',
-          padding: '2rem',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-        }}>
-          <h2 style={{
-            fontSize: '1.25rem',
-            fontWeight: '600',
-            color: '#1D3557',
-            marginBottom: '1.5rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
-            {/* Impact Ladder Icon */}
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 3l3 9 4-6 4 6 3-9"/>
-              <path d="M21 21H3"/>
-            </svg>
-            Custom Impact Ladder
-          </h2>
-
-          <div style={{
-            marginBottom: '1rem',
-            padding: '1rem',
-            backgroundColor: '#f0f9ff',
-            borderRadius: '0.375rem',
-            border: '1px solid #0ea5e9'
-          }}>
-            <p style={{
-              fontSize: '0.875rem',
-              color: '#0369a1',
-              margin: 0
-            }}>
-              <strong>Customize your impact scale definitions:</strong> Edit the descriptions below to match your product's specific impact measurement criteria. These definitions will be used for consistent impact scoring across all ideas.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gap: '1rem' }}>
-            {profileData.customImpactLadder.impactLevels.map((level, index) => (
-              <div key={level.name} style={{
-                display: 'grid',
-                gap: '1rem',
-                gridTemplateColumns: '120px 80px 1fr',
-                alignItems: 'center',
-                padding: '1rem',
-                backgroundColor: '#f8fafc',
-                borderRadius: '0.375rem',
-                border: '1px solid #e2e8f0'
-              }}>
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    color: '#6b7280',
-                    marginBottom: '0.25rem'
-                  }}>
-                    Impact Level
-                  </label>
-                  <div style={{
-                    padding: '0.5rem',
-                    backgroundColor: 'white',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    color: '#1f2937',
-                    textAlign: 'center'
-                  }}>
-                    {level.name}
-                  </div>
-                </div>
-                
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    color: '#6b7280',
-                    marginBottom: '0.25rem'
-                  }}>
-                    Value
-                  </label>
-                  <div style={{
-                    padding: '0.5rem',
-                    backgroundColor: 'white',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '0.375rem',
-                    fontSize: '0.875rem',
-                    fontWeight: '600',
-                    color: '#457B9D',
-                    textAlign: 'center'
-                  }}>
-                    {level.value}
-                  </div>
-                </div>
-                
-                <div>
-                  <label style={{
-                    display: 'block',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    color: '#6b7280',
-                    marginBottom: '0.25rem'
-                  }}>
-                    Description
-                  </label>
-                  <input
-                    type="text"
-                    value={level.description}
-                    onChange={(e) => updateImpactLevel(index, 'description', e.target.value)}
-                    placeholder="e.g., ≤1% lift"
-                    style={{
-                      width: '100%',
-                      padding: '0.5rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem',
-                      outline: 'none'
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-          </div>
         </div>
       </div>
 

@@ -608,7 +608,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
             <h3 style={{
               fontSize: '1rem',
               fontWeight: '600',
-              color: '#E63946',
+              color: '#133C55',
               marginBottom: '1rem'
             }}>
               North Star Metric
@@ -1967,7 +1967,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
             alignItems: 'center',
             gap: '0.5rem',
             padding: '0.75rem 2rem',
-            backgroundColor: '#E63946',
+            backgroundColor: '#133C55',
             color: 'white',
             border: 'none',
             borderRadius: '0.375rem',
@@ -1983,7 +1983,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
             e.currentTarget.style.boxShadow = '0 4px 8px rgba(230, 57, 70, 0.3)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#E63946';
+            e.currentTarget.style.backgroundColor = '#133C55';
             e.currentTarget.style.transform = 'translateY(0)';
             e.currentTarget.style.boxShadow = '0 2px 4px rgba(230, 57, 70, 0.2)';
           }}

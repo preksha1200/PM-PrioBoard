@@ -731,7 +731,7 @@ export default function App() {
                 border: 'none',
                 fontSize: '1.125rem',
                 fontWeight: '600',
-                color: '#E63946',
+                color: '#133C55',
                 cursor: 'pointer',
                 padding: '0',
                 width: '100%',
@@ -756,7 +756,7 @@ export default function App() {
                 >
                   <path
                     d="M4.5 2.25L8.25 6L4.5 9.75"
-                    stroke="#E63946"
+                    stroke="#133C55"
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -951,11 +951,11 @@ export default function App() {
                       >
                         <path
                           d="M12 2C8.5 2 6 4.5 6 8C6 8.5 6.1 9 6.2 9.5C5.5 10.2 5 11.1 5 12.2C5 13.8 6.2 15.1 7.8 15.4C8.5 16.4 9.7 17 11 17H13C14.3 17 15.5 16.4 16.2 15.4C17.8 15.1 19 13.8 19 12.2C19 11.1 18.5 10.2 17.8 9.5C17.9 9 18 8.5 18 8C18 4.5 15.5 2 12 2Z"
-                          fill="#E63946"
+                          fill="#133C55"
                         />
                         <path
                           d="M9 19C9 20.1 9.9 21 11 21H13C14.1 21 15 20.1 15 19V18H9V19Z"
-                          fill="#E63946"
+                          fill="#133C55"
                         />
                         <circle cx="9.5" cy="9" r="1" fill="white" />
                         <circle cx="14.5" cy="9" r="1" fill="white" />
@@ -1192,7 +1192,7 @@ export default function App() {
                           <span>Impact: {idea.impact}</span>
                           <span>Confidence: {Math.round(idea.confidence * 100)}%</span>
                           <span>Effort: {idea.effort}</span>
-                          <span style={{ fontWeight: '600', color: '#E63946' }}>Score: {idea.score}</span>
+                          <span style={{ fontWeight: '600', color: '#133C55' }}>Score: {idea.score}</span>
                         </div>
                         {(idea as any).reasoning && (
                           <div style={{
@@ -1257,7 +1257,7 @@ export default function App() {
                   style={{
                     flex: 1,
                     padding: '0.75rem',
-                    backgroundColor: '#E63946',
+                    backgroundColor: '#133C55',
                     color: 'white',
                     border: 'none',
                     borderRadius: '0.375rem',
@@ -1845,7 +1845,7 @@ export default function App() {
                 const x = 15 + (normalizedEffort * 70);
                 const y = 85 - (normalizedImpact * 70);
                 
-                const colors = ['#E63946', '#457B9D', '#A8DADC', '#CD8B76', '#1D3557', '#F77F00', '#FCBF49'];
+                const colors = ['#133C55', '#457B9D', '#A8DADC', '#CD8B76', '#1D3557', '#F77F00', '#FCBF49'];
                 const color = colors[index % colors.length];
                 
                 const pointSize = 14 + (idea.score / Math.max(...ideas.map(i => i.score))) * 6;

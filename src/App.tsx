@@ -628,7 +628,7 @@ export default function App() {
                 padding: '0.5rem 1rem',
                 backgroundColor: '#F8F4E3',
                 color: 'black',
-                border: '1px solid #e2e8f0',
+                border: '1px solid #F8F4E3',
                 borderRadius: '0.375rem',
                 cursor: 'pointer',
                 fontSize: '0.875rem',
@@ -662,7 +662,7 @@ export default function App() {
                 padding: '0.5rem 1rem',
                 backgroundColor: '#F8F4E3',
                 color: 'black',
-                border: '1px solid #e2e8f0',
+                border: '1px solid #F8F4E3',
                 borderRadius: '0.375rem',
                 cursor: 'pointer',
                 fontSize: '0.875rem',
@@ -1172,7 +1172,7 @@ export default function App() {
                   marginTop: '1rem',
                   padding: '1rem',
                   backgroundColor: '#f8fafc',
-                  border: '1px solid #e2e8f0',
+                  border: '1px solid #F8F4E3',
                   borderRadius: '0.5rem'
                 }}>
                   <h4 style={{
@@ -1187,7 +1187,7 @@ export default function App() {
                       <div key={index} style={{
                         padding: '0.75rem',
                         backgroundColor: 'white',
-                        border: '1px solid #e2e8f0',
+                        border: '1px solid #F8F4E3',
                         borderRadius: '0.375rem',
                         fontSize: '0.8125rem'
                       }}>

@@ -1251,19 +1251,20 @@ export default function App() {
               )}
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '0.75rem', paddingTop: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', paddingTop: '0.5rem', justifyContent: 'flex-start' }}>
                 <button
                   onClick={handleBulkAdd}
                   style={{
-                    flex: 1,
-                    padding: '0.75rem',
+                    padding: '0.75rem 1.5rem',
                     backgroundColor: '#133C55',
                     color: 'white',
                     border: 'none',
                     borderRadius: '0.375rem',
                     cursor: 'pointer',
                     fontSize: '0.875rem',
-                    fontWeight: '600'
+                    fontWeight: '600',
+                    minWidth: 'auto',
+                    whiteSpace: 'nowrap'
                   }}
                 >
                   Add Ideas

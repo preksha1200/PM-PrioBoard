@@ -143,6 +143,9 @@ export default function App() {
   
   // AI scoring preview state
   const [aiScoredPreview, setAiScoredPreview] = useState<Idea[]>([]);
+  
+  // Chart point details modal state
+  const [selectedIdea, setSelectedIdea] = useState<Idea | null>(null);
 
   // Load sample data on mount
   useEffect(() => {
@@ -1916,6 +1919,7 @@ export default function App() {
                       e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
                       e.currentTarget.style.zIndex = '3';
                     }}
+                    onClick={() => setSelectedIdea(idea)}
                   />
                 );
               })}
@@ -1985,6 +1989,182 @@ export default function App() {
           </div>
         </div>
       </div>
+      
+      {/* Minimal Side Panel for Idea Details */}
+      {selectedIdea && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: '480px',
+          height: '100vh',
+          backgroundColor: 'white',
+          boxShadow: '-4px 0 6px -1px rgba(0, 0, 0, 0.1)',
+          zIndex: 1000,
+          padding: '1.5rem',
+          overflowY: 'auto',
+          borderLeft: '1px solid #e2e8f0'
+        }}>
+          {/* Close Button */}
+          <button
+            onClick={() => setSelectedIdea(null)}
+            style={{
+              position: 'absolute',
+              top: '1rem',
+              right: '1rem',
+              background: 'none',
+              border: 'none',
+              fontSize: '1.25rem',
+              cursor: 'pointer',
+              color: '#64748b',
+              padding: '0.25rem',
+              borderRadius: '0.25rem',
+              lineHeight: 1
+            }}
+          >
+            ×
+          </button>
+          
+          {/* Idea Title */}
+          <h3 style={{
+            fontSize: '1.125rem',
+            fontWeight: '600',
+            color: '#1D3557',
+            margin: '0 0 1rem 0',
+            paddingRight: '2rem',
+            lineHeight: '1.4'
+          }}>
+            {selectedIdea.title}
+          </h3>
+          
+          {/* Tags */}
+          {selectedIdea.tags.length > 0 && (
+            <div style={{
+              display: 'flex',
+              gap: '0.5rem',
+              flexWrap: 'wrap',
+              marginBottom: '1.5rem'
+            }}>
+              {selectedIdea.tags.map((tag, index) => (
+                <span
+                  key={index}
+                  style={{
+                    backgroundColor: '#f1f5f9',
+                    color: '#64748b',
+                    padding: '0.25rem 0.5rem',
+                    borderRadius: '0.25rem',
+                    fontSize: '0.75rem',
+                    fontWeight: '500'
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+          
+          {/* Score Breakdown */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <h4 style={{
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              color: '#374151',
+              margin: '0 0 0.75rem 0'
+            }}>
+              Score Breakdown
+            </h4>
+            
+            <div style={{
+              fontSize: '0.875rem',
+              color: '#64748b',
+              marginBottom: '0.75rem'
+            }}>
+              {model} = {model === 'ICE' 
+                ? '(Reach × Impact × Confidence) ÷ Effort'
+                : '(Impact × Confidence) ÷ Effort'
+              }
+            </div>
+            
+            <div style={{
+              backgroundColor: '#f8fafc',
+              padding: '1rem',
+              borderRadius: '0.5rem',
+              border: '1px solid #e2e8f0'
+            }}>
+              <div style={{
+                fontSize: '1.5rem',
+                fontWeight: '700',
+                color: '#1D3557',
+                marginBottom: '0.5rem'
+              }}>
+                {Math.round(selectedIdea.score)}
+              </div>
+              
+              <div style={{
+                fontSize: '0.75rem',
+                color: '#64748b',
+                marginBottom: '1rem'
+              }}>
+                {model === 'ICE' 
+                  ? `${selectedIdea.impact} × ${Math.round((selectedIdea.confidence || 0) * 100)}% ÷ ${selectedIdea.effort} = ${Math.round(selectedIdea.score)}`
+                  : `${selectedIdea.reach?.toLocaleString()} × ${selectedIdea.impact} × ${Math.round((selectedIdea.confidence || 0) * 100)}% ÷ ${selectedIdea.effort} = ${Math.round(selectedIdea.score)}`
+                }
+              </div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                {model === 'RICE' && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Reach:</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#374151' }}>
+                      {selectedIdea.reach?.toLocaleString() || 0}
+                    </span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Impact:</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#374151' }}>
+                    {selectedIdea.impact}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Confidence:</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#374151' }}>
+                    {Math.round((selectedIdea.confidence || 0) * 100)}%
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Effort:</span>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '600', color: '#374151' }}>
+                    {selectedIdea.effort}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Description */}
+          {selectedIdea.notes && (
+            <div>
+              <h4 style={{
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                color: '#374151',
+                margin: '0 0 0.5rem 0'
+              }}>
+                Description
+              </h4>
+              <p style={{
+                color: '#64748b',
+                fontSize: '0.8125rem',
+                lineHeight: '1.5',
+                margin: 0
+              }}>
+                {selectedIdea.notes}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
       
       {/* Delete Confirmation Dialog */}
       {deleteConfirmation.isOpen && (

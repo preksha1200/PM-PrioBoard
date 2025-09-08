@@ -19,14 +19,37 @@ interface Idea {
 type ScoringModel = 'ICE' | 'RICE';
 
 // Utility functions
+// Helper function to retrieve Product Profile context for AI scoring
+const getProductProfileContext = () => {
+  try {
+    const savedProfile = localStorage.getItem('pm_prioboard_product_profile');
+    if (savedProfile) {
+      const profileData = JSON.parse(savedProfile);
+      // Extract relevant context for AI scoring
+      return {
+        productName: profileData.productName,
+        oneLiner: profileData.oneLiner,
+        detailedDescription: profileData.detailedDescription,
+        northStarMetric: profileData.northStarMetric,
+        audienceScale: profileData.audienceScale,
+        businessContext: profileData.businessContext,
+        funnelChannels: profileData.funnelChannels,
+        teamEffortUnits: profileData.teamEffortUnits,
+        constraintsRisk: profileData.constraintsRisk
+      };
+    }
+  } catch (error) {
+    console.warn('Error retrieving Product Profile context:', error);
+  }
+  return undefined;
+};
+
+// Helper function to calculate score based on model
 function calculateScore(idea: Idea, model: ScoringModel): number {
-  if (idea.effort <= 0) return 0;
-  
   if (model === 'ICE') {
-    return (idea.impact * idea.confidence) / idea.effort;
+    return (idea.impact || 0) * (idea.confidence || 0) * (idea.effort ? 1 / (idea.effort || 1) : 0);
   } else {
-    if (!idea.reach || idea.reach <= 0) return 0;
-    return (idea.reach * idea.impact * idea.confidence) / idea.effort;
+    return ((idea.reach || 0) * (idea.impact || 0) * (idea.confidence || 0)) / (idea.effort || 1);
   }
 }
 
@@ -301,8 +324,9 @@ export default function App() {
           const allTags = [...(parsedIdea.tags || []), ...(newIdea.defaultTags || [])]
             .filter((tag, index, arr) => arr.indexOf(tag) === index); // Remove duplicates
           
-          // Generate AI-suggested scores based on content analysis
-          const aiScores = await generateAIScores(parsedIdea.title, parsedIdea.notes || '');
+          // Generate AI-suggested scores with Product Profile context for more informed analysis
+          const productContext = getProductProfileContext();
+          const aiScores = await generateAIScores(parsedIdea.title, parsedIdea.notes || '', productContext);
           
           newIdeas.push({
             ...parsedIdea,

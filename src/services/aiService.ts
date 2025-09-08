@@ -10,6 +10,50 @@ interface AIScoreResult {
   isGeminiResponse?: boolean;
 }
 
+// Product Profile context for AI scoring
+interface ProductProfileContext {
+  productName?: string;
+  oneLiner?: string;
+  detailedDescription?: string;
+  northStarMetric?: {
+    name: string;
+    value: string;
+    unit: string;
+    target: string;
+  };
+  audienceScale?: {
+    targetAudience: string;
+    mau: string;
+    wau: string;
+    activeAccounts: string;
+  };
+  businessContext?: {
+    industry: string;
+    businessModel: string;
+    productStage: string;
+  };
+  funnelChannels?: {
+    touchpoints: string[];
+    exposureRate: string;
+    openRate: string;
+    clickRate: string;
+    userInteraction: string;
+  };
+  teamEffortUnits?: {
+    teamSize: string;
+    monthlyPersonMonths: string;
+    effortUnitPreference: 'person-weeks' | 'person-months';
+    timeHorizon: 'per-week' | 'per-month';
+  };
+  constraintsRisk?: {
+    regulatoryConstraints: boolean;
+    regulatoryDetails: string;
+    performanceConstraints: string;
+    infrastructureConstraints: string;
+    riskTolerance: 'Low' | 'Medium' | 'High';
+  };
+}
+
 // Enhanced content analysis for intelligent fallback scoring
 class ContentAnalyzer {
   // Check if text appears to be meaningful vs gibberish
@@ -92,10 +136,10 @@ class ContentAnalyzer {
 }
 
 // Real Gemini AI scoring with intelligent LLM analysis
-export const generateAIScores = async (title: string, notes: string): Promise<AIScoreResult> => {
+export const generateAIScores = async (title: string, notes: string, context?: ProductProfileContext): Promise<AIScoreResult> => {
   try {
     // Try Gemini API first for real AI analysis
-    const geminiResult = await callGeminiAPI(title, notes);
+    const geminiResult = await callGeminiAPI(title, notes, context);
     if (geminiResult) {
       return geminiResult;
     }
@@ -140,7 +184,7 @@ export const generateAIScores = async (title: string, notes: string): Promise<AI
 };
 
 // Gemini API integration for real AI scoring
-const callGeminiAPI = async (title: string, notes: string): Promise<AIScoreResult | null> => {
+const callGeminiAPI = async (title: string, notes: string, context?: ProductProfileContext): Promise<AIScoreResult | null> => {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   
   if (!apiKey || apiKey === 'your_gemini_api_key_here') {
@@ -150,7 +194,7 @@ const callGeminiAPI = async (title: string, notes: string): Promise<AIScoreResul
 
   try {
     const genAI = new GoogleGenAI({ apiKey });
-    const prompt = createGeminiPrompt(title, notes);
+    const prompt = createGeminiPrompt(title, notes, context);
     
     const result = await genAI.models.generateContent({
       model: 'gemini-2.0-flash-exp',
@@ -175,27 +219,145 @@ const callGeminiAPI = async (title: string, notes: string): Promise<AIScoreResul
   }
 };
 
-// Create specialized prompt for PM idea scoring
-const createGeminiPrompt = (title: string, notes: string): string => {
-  return `You are a senior product manager with 10+ years of experience. Analyze this product idea and provide ICE/RICE scoring.
+// Create specialized prompt for PM idea scoring with Product Profile context
+const createGeminiPrompt = (title: string, notes: string, context?: ProductProfileContext): string => {
+  // Build contextual information from Product Profile
+  let contextSection = '';
+  
+  if (context) {
+    contextSection = `
 
-Product Idea:
+## PRODUCT CONTEXT
+`;
+    
+    if (context.productName || context.oneLiner) {
+      contextSection += `**Product**: ${context.productName || 'Not specified'}
+`;
+      if (context.oneLiner) {
+        contextSection += `**Mission**: ${context.oneLiner}
+`;
+      }
+      if (context.detailedDescription) {
+        contextSection += `**Description**: ${context.detailedDescription}
+`;
+      }
+    }
+    
+    if (context.northStarMetric?.name) {
+      contextSection += `**North Star Metric**: ${context.northStarMetric.name} (Current: ${context.northStarMetric.value} ${context.northStarMetric.unit}, Target: ${context.northStarMetric.target})
+`;
+    }
+    
+    if (context.audienceScale) {
+      contextSection += `**Audience Scale**: 
+`;
+      if (context.audienceScale.targetAudience) {
+        contextSection += `  - Target Audience: ${context.audienceScale.targetAudience}
+`;
+      }
+      if (context.audienceScale.mau) {
+        contextSection += `  - Monthly Active Users: ${context.audienceScale.mau}
+`;
+      }
+      if (context.audienceScale.wau) {
+        contextSection += `  - Weekly Active Users: ${context.audienceScale.wau}
+`;
+      }
+      if (context.audienceScale.activeAccounts) {
+        contextSection += `  - Active Accounts: ${context.audienceScale.activeAccounts}
+`;
+      }
+    }
+    
+    if (context.businessContext) {
+      contextSection += `**Business Context**: 
+`;
+      contextSection += `  - Industry: ${context.businessContext.industry}
+`;
+      contextSection += `  - Business Model: ${context.businessContext.businessModel}
+`;
+      contextSection += `  - Product Stage: ${context.businessContext.productStage}
+`;
+    }
+    
+    if (context.funnelChannels) {
+      contextSection += `**Distribution & Engagement**: 
+`;
+      if (context.funnelChannels.touchpoints?.length > 0) {
+        contextSection += `  - Touchpoints: ${context.funnelChannels.touchpoints.join(', ')}
+`;
+      }
+      if (context.funnelChannels.exposureRate) {
+        contextSection += `  - Exposure Rate: ${context.funnelChannels.exposureRate}%
+`;
+      }
+      if (context.funnelChannels.openRate) {
+        contextSection += `  - Open Rate: ${context.funnelChannels.openRate}%
+`;
+      }
+      if (context.funnelChannels.clickRate) {
+        contextSection += `  - Click Rate: ${context.funnelChannels.clickRate}%
+`;
+      }
+    }
+    
+    if (context.teamEffortUnits) {
+      contextSection += `**Team & Resources**: 
+`;
+      if (context.teamEffortUnits.teamSize) {
+        contextSection += `  - Team Size: ${context.teamEffortUnits.teamSize} people
+`;
+      }
+      if (context.teamEffortUnits.monthlyPersonMonths) {
+        contextSection += `  - Monthly Capacity: ${context.teamEffortUnits.monthlyPersonMonths} ${context.teamEffortUnits.effortUnitPreference}
+`;
+      }
+    }
+    
+    if (context.constraintsRisk) {
+      contextSection += `**Constraints & Risk**: 
+`;
+      contextSection += `  - Risk Tolerance: ${context.constraintsRisk.riskTolerance}
+`;
+      if (context.constraintsRisk.regulatoryConstraints && context.constraintsRisk.regulatoryDetails) {
+        contextSection += `  - Regulatory Constraints: ${context.constraintsRisk.regulatoryDetails}
+`;
+      }
+      if (context.constraintsRisk.performanceConstraints) {
+        contextSection += `  - Performance Constraints: ${context.constraintsRisk.performanceConstraints}
+`;
+      }
+      if (context.constraintsRisk.infrastructureConstraints) {
+        contextSection += `  - Infrastructure Constraints: ${context.constraintsRisk.infrastructureConstraints}
+`;
+      }
+    }
+  }
+  
+  return `You are a senior product manager with 10+ years of experience. Analyze this product idea and provide ICE/RICE scoring based on the specific product context provided.${contextSection}
+
+## FEATURE/IDEA TO ANALYZE
 Title: "${title}"
 Description: "${notes || 'No additional description provided'}"
 
-Please analyze this idea and provide scores for:
+## SCORING INSTRUCTIONS
+Using the product context above, provide scores for:
 
-1. **Impact**: How much will this positively affect the key metric? (1=minimal impact, 5=massive impact)
-2. **Confidence**: How confident are you in your estimates? (0.1=10% confident, 1.0=100% confident)  
-3. **Effort**: How much development work is required? (0.1=minimal effort, 5=massive effort)
-4. **Reach**: How many users/customers will this affect? (number, e.g., 1000, 5000, 50000)
+1. **Impact**: How much will this positively affect the North Star Metric and key business objectives? Consider the specific product stage, audience scale, and business model. (1=minimal impact, 5=massive impact)
 
-Consider:
-- Technical complexity and implementation challenges
-- Business value and user impact
-- Market opportunity and competitive advantage
-- Resource requirements and timeline
-- Risk factors and uncertainty levels
+2. **Confidence**: How confident are you in your estimates given the product context, constraints, and available information? Consider the risk tolerance and any regulatory/technical constraints. (0.1=10% confident, 1.0=100% confident)
+
+3. **Effort**: How much development work is required considering the team size, capacity, and technical constraints mentioned? (0.1=minimal effort, 5=massive effort)
+
+4. **Reach**: How many users/customers will this affect based on the audience scale and distribution channels? Use the MAU/WAU numbers and touchpoints as reference. (number, e.g., 1000, 5000, 50000)
+
+## CONTEXTUAL CONSIDERATIONS
+- Align impact scoring with the North Star Metric and business model
+- Factor in the product stage (early stage ideas may have higher uncertainty)
+- Consider the team capacity and constraints when estimating effort
+- Use the audience scale data to ground reach estimates in reality
+- Account for distribution channels and engagement rates
+- Respect the stated risk tolerance and constraints
 
 Respond in this exact JSON format:
 {
@@ -203,7 +365,7 @@ Respond in this exact JSON format:
   "confidence": [number 0.1-1.0],
   "effort": [number 0.1-5],
   "reach": [number],
-  "reasoning": "Brief explanation of your scoring rationale focusing on key factors"
+  "reasoning": "Brief explanation of your scoring rationale, specifically referencing how the product context influenced your scoring decisions"
 }
 
 IMPORTANT: Respond ONLY with valid JSON, no additional text.`;

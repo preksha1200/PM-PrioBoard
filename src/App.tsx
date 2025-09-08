@@ -1190,7 +1190,7 @@ export default function App() {
                     fontSize: '0.75rem',
                     color: '#386FA4',
                     marginTop: '0.5rem',
-                    textAlign: 'center'
+                    textAlign: 'left'
                   }}>
                     AI will analyze your ideas and suggest appropriate scores based on content and context
                   </div>

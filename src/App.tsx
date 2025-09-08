@@ -567,7 +567,7 @@ export default function App() {
                 left: model === 'ICE' ? '4px' : '50%',
                 width: 'calc(50% - 4px)',
                 height: 'calc(100% - 8px)',
-                backgroundColor: '#457B9D',
+                backgroundColor: '#F8F4E3',
                 borderRadius: '8px',
                 transition: 'left 0.2s ease-in-out',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)'

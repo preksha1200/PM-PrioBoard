@@ -1172,7 +1172,6 @@ export default function App() {
                   <button
                     onClick={handleGenerateAIScoring}
                     style={{
-                      width: '100%',
                       padding: '0.75rem 1.5rem',
                       backgroundColor: '#E63946',
                       color: '#ffffff',
@@ -1181,10 +1180,6 @@ export default function App() {
                       cursor: 'pointer',
                       fontSize: '0.875rem',
                       fontWeight: '600',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
                       minWidth: 'auto',
                       whiteSpace: 'nowrap'
                     }}

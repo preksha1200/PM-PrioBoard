@@ -799,7 +799,7 @@ export default function App() {
                 />
                 <div style={{
                   fontSize: '0.75rem',
-                  color: '#6b7280',
+                  color: '#386FA4',
                   marginTop: '0.25rem'
                 }}>
                   Advanced format: Title | I:impact | C:confidence | E:effort | R:reach | T:tags
@@ -832,7 +832,7 @@ export default function App() {
                 />
                 <div style={{
                   fontSize: '0.75rem',
-                  color: '#6b7280',
+                  color: '#386FA4',
                   marginTop: '0.25rem'
                 }}>
                   These tags will be applied to all ideas automatically
@@ -916,7 +916,7 @@ export default function App() {
                       <div style={{ fontWeight: '500', color: '#1D3557', marginBottom: '0.25rem' }}>
                         Manual Scoring
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#386FA4' }}>
                         Set uniform scores for all ideas
                       </div>
                     </div>
@@ -980,7 +980,7 @@ export default function App() {
                       <div style={{ fontWeight: '500', color: '#1D3557', marginBottom: '0.25rem' }}>
                         AI Suggested Scoring
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
+                      <div style={{ fontSize: '0.75rem', color: '#386FA4' }}>
                         Let AI analyze and suggest scores
                       </div>
                     </div>
@@ -1150,7 +1150,7 @@ export default function App() {
                   </button>
                   <div style={{
                     fontSize: '0.75rem',
-                    color: '#6b7280',
+                    color: '#386FA4',
                     marginTop: '0.5rem',
                     textAlign: 'center'
                   }}>
@@ -1187,7 +1187,7 @@ export default function App() {
                         <div style={{ fontWeight: '600', color: '#1D3557', marginBottom: '0.25rem' }}>
                           {idea.title}
                         </div>
-                        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: '#6b7280' }}>
+                        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.75rem', color: '#386FA4' }}>
                           {model === 'RICE' && <span>Reach: {idea.reach}</span>}
                           <span>Impact: {idea.impact}</span>
                           <span>Confidence: {Math.round(idea.confidence * 100)}%</span>
@@ -1273,7 +1273,7 @@ export default function App() {
                   onClick={() => document.getElementById('csvFileInput')?.click()}
                   style={{
                     padding: '0.75rem 1rem',
-                    backgroundColor: '#6b7280',
+                    backgroundColor: '#386FA4',
                     color: 'white',
                     border: 'none',
                     borderRadius: '0.375rem',
@@ -1296,7 +1296,7 @@ export default function App() {
               {/* CSV Format Info */}
               <div style={{
                 fontSize: '0.75rem',
-                color: '#6b7280',
+                color: '#386FA4',
                 fontStyle: 'italic'
               }}>
                 CSV format: Title, {model === 'RICE' ? 'Reach, ' : ''}Impact, Confidence, Effort, Tags
@@ -1543,7 +1543,7 @@ export default function App() {
                               onClick={handleCancelEdit}
                               style={{
                                 padding: '0.25rem 0.5rem',
-                                backgroundColor: '#6b7280',
+                                backgroundColor: '#386FA4',
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '0.25rem',
@@ -2012,7 +2012,7 @@ export default function App() {
                 </h3>
                 <p style={{
                   fontSize: '0.875rem',
-                  color: '#6b7280',
+                  color: '#386FA4',
                   margin: '0.25rem 0 0 0'
                 }}>
                   This action cannot be undone

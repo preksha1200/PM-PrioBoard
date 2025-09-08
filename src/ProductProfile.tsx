@@ -376,7 +376,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
               alignItems: 'center',
               gap: '0.5rem',
               padding: '0.5rem 1rem',
-              backgroundColor: '#6b7280',
+              backgroundColor: '#386FA4',
               color: 'white',
               border: 'none',
               borderRadius: '0.375rem',
@@ -389,7 +389,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
               e.currentTarget.style.backgroundColor = '#4b5563';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#6b7280';
+              e.currentTarget.style.backgroundColor = '#386FA4';
             }}
           >
             {/* Back Arrow Icon */}
@@ -620,7 +620,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                   display: 'block',
                   fontSize: '0.75rem',
                   fontWeight: '500',
-                  color: '#6b7280',
+                  color: '#386FA4',
                   marginBottom: '0.25rem'
                 }}>
                   Metric Name
@@ -646,7 +646,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                   display: 'block',
                   fontSize: '0.75rem',
                   fontWeight: '500',
-                  color: '#6b7280',
+                  color: '#386FA4',
                   marginBottom: '0.25rem'
                 }}>
                   Current Value
@@ -672,7 +672,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                   display: 'block',
                   fontSize: '0.75rem',
                   fontWeight: '500',
-                  color: '#6b7280',
+                  color: '#386FA4',
                   marginBottom: '0.25rem'
                 }}>
                   Unit
@@ -698,7 +698,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                   display: 'block',
                   fontSize: '0.75rem',
                   fontWeight: '500',
-                  color: '#6b7280',
+                  color: '#386FA4',
                   marginBottom: '0.25rem'
                 }}>
                   Target
@@ -766,7 +766,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
               <div style={{
                 textAlign: 'center',
                 padding: '2rem',
-                color: '#6b7280',
+                color: '#386FA4',
                 fontStyle: 'italic'
               }}>
                 No secondary KPIs added yet. Click "Add KPI" to get started.
@@ -789,7 +789,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                         display: 'block',
                         fontSize: '0.75rem',
                         fontWeight: '500',
-                        color: '#6b7280',
+                        color: '#386FA4',
                         marginBottom: '0.25rem'
                       }}>
                         KPI Name
@@ -815,7 +815,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                         display: 'block',
                         fontSize: '0.75rem',
                         fontWeight: '500',
-                        color: '#6b7280',
+                        color: '#386FA4',
                         marginBottom: '0.25rem'
                       }}>
                         Current Value
@@ -841,7 +841,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                         display: 'block',
                         fontSize: '0.75rem',
                         fontWeight: '500',
-                        color: '#6b7280',
+                        color: '#386FA4',
                         marginBottom: '0.25rem'
                       }}>
                         Unit
@@ -867,7 +867,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                         display: 'block',
                         fontSize: '0.75rem',
                         fontWeight: '500',
-                        color: '#6b7280',
+                        color: '#386FA4',
                         marginBottom: '0.25rem'
                       }}>
                         Target
@@ -1105,7 +1105,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                 <div style={{
                   textAlign: 'center',
                   padding: '2rem',
-                  color: '#6b7280',
+                  color: '#386FA4',
                   fontStyle: 'italic'
                 }}>
                   No user segments added yet. Click "Add Segment" to get started.
@@ -1128,7 +1128,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                           display: 'block',
                           fontSize: '0.75rem',
                           fontWeight: '500',
-                          color: '#6b7280',
+                          color: '#386FA4',
                           marginBottom: '0.25rem'
                         }}>
                           Segment Name
@@ -1154,7 +1154,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
                           display: 'block',
                           fontSize: '0.75rem',
                           fontWeight: '500',
-                          color: '#6b7280',
+                          color: '#386FA4',
                           marginBottom: '0.25rem'
                         }}>
                           Size
@@ -2004,7 +2004,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
             alignItems: 'center',
             gap: '0.5rem',
             padding: '0.75rem 2rem',
-            backgroundColor: '#6b7280',
+            backgroundColor: '#386FA4',
             color: 'white',
             border: 'none',
             borderRadius: '0.375rem',
@@ -2020,7 +2020,7 @@ const ProductProfile: React.FC<ProductProfileProps> = ({ onBack }) => {
             e.currentTarget.style.boxShadow = '0 4px 8px rgba(107, 114, 128, 0.3)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#6b7280';
+            e.currentTarget.style.backgroundColor = '#386FA4';
             e.currentTarget.style.transform = 'translateY(0)';
             e.currentTarget.style.boxShadow = '0 2px 4px rgba(107, 114, 128, 0.2)';
           }}

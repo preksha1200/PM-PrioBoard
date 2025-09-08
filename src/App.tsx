@@ -46,10 +46,20 @@ const getProductProfileContext = () => {
 
 // Helper function to calculate score based on model
 function calculateScore(idea: Idea, model: ScoringModel): number {
+  // Ensure we have valid values and avoid division by zero
+  const impact = idea.impact || 0;
+  const confidence = idea.confidence || 0;
+  const effort = idea.effort || 1;
+  const reach = idea.reach || 0;
+  
+  if (effort <= 0) return 0; // Avoid division by zero
+  
   if (model === 'ICE') {
-    return (idea.impact || 0) * (idea.confidence || 0) * (idea.effort ? 1 / (idea.effort || 1) : 0);
+    // ICE = (Impact × Confidence) / Effort
+    return (impact * confidence) / effort;
   } else {
-    return ((idea.reach || 0) * (idea.impact || 0) * (idea.confidence || 0)) / (idea.effort || 1);
+    // RICE = (Reach × Impact × Confidence) / Effort
+    return (reach * impact * confidence) / effort;
   }
 }
 

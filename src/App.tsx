@@ -555,7 +555,7 @@ export default function App() {
             <div style={{
               position: 'relative',
               display: 'inline-flex',
-              backgroundColor: '#f1f5f9',
+              backgroundColor: 'white',
               borderRadius: '12px',
               padding: '4px',
               border: '1px solid #e2e8f0'
@@ -581,7 +581,7 @@ export default function App() {
                   zIndex: 1,
                   padding: '8px 20px',
                   backgroundColor: 'transparent',
-                  color: model === 'ICE' ? 'white' : '#64748b',
+                  color: 'black',
                   border: 'none',
                   borderRadius: '8px',
                   cursor: 'pointer',
@@ -602,7 +602,7 @@ export default function App() {
                   zIndex: 1,
                   padding: '8px 20px',
                   backgroundColor: 'transparent',
-                  color: model === 'RICE' ? 'white' : '#64748b',
+                  color: 'black',
                   border: 'none',
                   borderRadius: '8px',
                   cursor: 'pointer',

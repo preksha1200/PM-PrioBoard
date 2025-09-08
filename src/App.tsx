@@ -1173,18 +1173,20 @@ export default function App() {
                     onClick={handleGenerateAIScoring}
                     style={{
                       width: '100%',
-                      padding: '0.5rem',
-                      backgroundColor: '#F87171',
+                      padding: '0.75rem 1.5rem',
+                      backgroundColor: '#E63946',
                       color: '#ffffff',
                       border: 'none',
                       borderRadius: '0.375rem',
                       cursor: 'pointer',
-                      fontSize: '0.8125rem',
-                      fontWeight: '500',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '0.5rem'
+                      gap: '0.5rem',
+                      minWidth: 'auto',
+                      whiteSpace: 'nowrap'
                     }}
                   >
                     🧠 Generate AI Scoring

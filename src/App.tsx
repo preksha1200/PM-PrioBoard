@@ -2000,60 +2000,65 @@ export default function App() {
               </div>
               
               {/* Data points */}
-              {ideas.map((idea, index) => {
+              {(() => {
+                // Calculate ranges once for all ideas to prevent recalculation on each render
                 const impacts = ideas.map(i => i.impact);
                 const efforts = ideas.map(i => i.effort);
+                const scores = ideas.map(i => i.score);
                 
                 const minImpact = Math.min(...impacts);
                 const maxImpact = Math.max(...impacts);
                 const minEffort = Math.min(...efforts);
                 const maxEffort = Math.max(...efforts);
+                const maxScore = Math.max(...scores);
                 
                 const impactRange = maxImpact - minImpact || 1;
                 const effortRange = maxEffort - minEffort || 1;
                 
-                const normalizedEffort = (idea.effort - minEffort) / effortRange;
-                const normalizedImpact = (idea.impact - minImpact) / impactRange;
-                
-                const x = 15 + (normalizedEffort * 70);
-                const y = 85 - (normalizedImpact * 70);
-                
                 const colors = ['#133C55', '#457B9D', '#A8DADC', '#CD8B76', '#1D3557', '#F77F00', '#FCBF49'];
-                const color = colors[index % colors.length];
                 
-                const pointSize = 14 + (idea.score / Math.max(...ideas.map(i => i.score))) * 6;
-                
-                return (
-                  <div
-                    key={idea.id}
-                    style={{
-                      position: 'absolute',
-                      left: `${x}%`,
-                      top: `${y}%`,
-                      width: `${pointSize}px`,
-                      height: `${pointSize}px`,
-                      backgroundColor: color,
-                      borderRadius: '50%',
-                      border: '3px solid white',
-                      boxShadow: '0 3px 8px rgba(0,0,0,0.15)',
-                      transform: 'translate(-50%, -50%)',
-                      cursor: 'pointer',
-                      zIndex: 3,
-                      transition: 'all 0.2s ease'
-                    }}
-                    title={`${idea.title}\nImpact: ${idea.impact}, Effort: ${idea.effort}\nScore: ${Math.round(idea.score)}`}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.2)';
-                      e.currentTarget.style.zIndex = '4';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
-                      e.currentTarget.style.zIndex = '3';
-                    }}
-                    onClick={() => setSelectedIdea(idea)}
-                  />
-                );
-              })}
+                return ideas.map((idea, index) => {
+                  const normalizedEffort = (idea.effort - minEffort) / effortRange;
+                  const normalizedImpact = (idea.impact - minImpact) / impactRange;
+                  
+                  const x = 15 + (normalizedEffort * 70);
+                  const y = 85 - (normalizedImpact * 70);
+                  
+                  const color = colors[index % colors.length];
+                  const pointSize = 14 + (idea.score / maxScore) * 6;
+
+                  return (
+                    <div
+                      key={idea.id}
+                      style={{
+                        position: 'absolute',
+                        left: `${x}%`,
+                        top: `${y}%`,
+                        width: `${pointSize}px`,
+                        height: `${pointSize}px`,
+                        backgroundColor: color,
+                        borderRadius: '50%',
+                        border: '3px solid white',
+                        boxShadow: '0 3px 8px rgba(0,0,0,0.15)',
+                        transform: 'translate(-50%, -50%)',
+                        cursor: 'pointer',
+                        zIndex: 3,
+                        transition: 'all 0.2s ease'
+                      }}
+                      title={`${idea.title}\nImpact: ${idea.impact}, Effort: ${idea.effort}\nScore: ${Math.round(idea.score)}`}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                        e.currentTarget.style.zIndex = '4';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
+                        e.currentTarget.style.zIndex = '3';
+                      }}
+                      onClick={() => setSelectedIdea(idea)}
+                    />
+                  );
+                });
+              })()}
               
               {/* Axis labels */}
               <div style={{

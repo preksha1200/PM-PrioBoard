@@ -27,11 +27,8 @@ export const Auth: React.FC<AuthProps> = ({ onAuthSuccess }) => {
       if (error) {
         setMessage(error.message)
       } else {
-        if (isSignUp) {
-          setMessage('Check your email for the confirmation link!')
-        } else {
-          onAuthSuccess?.()
-        }
+        // Both sign up and sign in should proceed directly
+        onAuthSuccess?.()
       }
     } catch (error) {
       setMessage('An unexpected error occurred')

@@ -241,6 +241,131 @@ export default function App() {
     setTimeout(() => setMessage(''), 3000);
   };
 
+  // Parse structured text format: "Title | I:5 | C:0.8 | E:1.5 | R:100 | T:feature,ui"
+  const parseIdeaFromText = (text: string): Partial<Idea> | null => {
+    if (!text.trim()) return null;
+    
+    const parts = text.split('|').map(p => p.trim());
+    if (parts.length === 0) return null;
+    
+    const idea: Partial<Idea> = {
+      title: parts[0],
+      notes: '',
+      impact: 3,
+      confidence: 0.8,
+      effort: 2,
+      reach: model === 'RICE' ? 100 : undefined,
+      tags: []
+    };
+    
+    // Parse structured parameters
+    for (let i = 1; i < parts.length; i++) {
+      const part = parts[i];
+      if (part.startsWith('I:')) {
+        idea.impact = parseFloat(part.substring(2)) || 3;
+      } else if (part.startsWith('C:')) {
+        idea.confidence = parseFloat(part.substring(2)) || 0.8;
+      } else if (part.startsWith('E:')) {
+        idea.effort = parseFloat(part.substring(2)) || 2;
+      } else if (part.startsWith('R:') && model === 'RICE') {
+        idea.reach = parseFloat(part.substring(2)) || 100;
+      } else if (part.startsWith('T:')) {
+        idea.tags = part.substring(2).split(',').map(t => t.trim()).filter(t => t);
+      }
+    }
+    
+    return idea;
+  };
+
+  // Generate AI scoring for ideas
+  const handleGenerateAIScoring = async () => {
+    if (!newIdea.bulkText.trim()) {
+      showMessage('Please enter some ideas first');
+      return;
+    }
+
+    try {
+      const lines = newIdea.bulkText.split('\n').filter(line => line.trim());
+      const scoredIdeas: Idea[] = [];
+      
+      for (const line of lines) {
+        const parsedIdea = parseIdeaFromText(line.trim());
+        if (parsedIdea && parsedIdea.title) {
+          const aiResult = await generateAIScores(parsedIdea.title, parsedIdea.notes || '');
+          
+          const newIdea: Idea = {
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+            title: parsedIdea.title,
+            notes: parsedIdea.notes || '',
+            reach: model === 'RICE' ? (aiResult.reach || 100) : undefined,
+            impact: aiResult.impact,
+            confidence: aiResult.confidence,
+            effort: aiResult.effort,
+            score: 0,
+            tags: parsedIdea.tags || [],
+            createdAt: new Date().toISOString()
+          };
+          
+          newIdea.score = calculateScore(newIdea, model);
+          scoredIdeas.push(newIdea);
+        }
+      }
+      
+      setAiScoredPreview(scoredIdeas);
+      showMessage(`Generated AI scores for ${scoredIdeas.length} ideas`);
+    } catch (error) {
+      console.error('Error generating AI scores:', error);
+      showMessage('Error generating AI scores');
+    }
+  };
+
+  // Edit functionality
+  const handleEditIdea = (idea: Idea) => {
+    setEditingId(idea.id);
+    setEditForm({ ...idea });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingId || !editForm.title?.trim()) return;
+
+    try {
+      const updatedIdea: Idea = {
+        ...editForm as Idea,
+        id: editingId,
+        score: calculateScore(editForm as Idea, model)
+      };
+
+      await ideasService.update(editingId, {
+        title: updatedIdea.title,
+        notes: updatedIdea.notes || null,
+        reach: updatedIdea.reach || null,
+        impact: updatedIdea.impact,
+        confidence: updatedIdea.confidence,
+        effort: updatedIdea.effort,
+        score: updatedIdea.score,
+        tags: updatedIdea.tags || null
+      });
+
+      setIdeas(prevIdeas =>
+        prevIdeas.map(idea =>
+          idea.id === editingId ? updatedIdea : idea
+        )
+      );
+
+      setEditingId(null);
+      setEditForm({});
+      showMessage('Idea updated successfully');
+    } catch (error) {
+      console.error('Error updating idea:', error);
+      showMessage('Error updating idea');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditForm({});
+  };
+
   const handleAddIdea = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -383,10 +508,11 @@ export default function App() {
     }
   };
 
-  const handleBulkAdd = () => {
-    // If AI scoring mode and there are previewed ideas, add them
-    if (newIdea.scoringMethod === 'ai' && aiScoredPreview.length > 0) {
-      handleAddAIScoredIdeas();
+  const handleBulkAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newIdea.scoringMethod === 'ai') {
+      handleGenerateAIScoring();
       return;
     }
 
@@ -406,32 +532,50 @@ export default function App() {
         const allTags = [...(parsedIdea.tags || []), ...(newIdea.defaultTags || [])]
           .filter((tag, index, arr) => arr.indexOf(tag) === index); // Remove duplicates
         
-        newIdeas.push({
-          ...parsedIdea,
+        const ideaWithDefaults: Idea = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          title: parsedIdea.title || '',
+          notes: parsedIdea.notes || '',
+          reach: model === 'RICE' ? (parsedIdea.reach || newIdea.reach || 100) : undefined,
+          impact: parsedIdea.impact || newIdea.impact || 3,
+          confidence: parsedIdea.confidence || newIdea.confidence || 0.8,
+          effort: parsedIdea.effort || newIdea.effort || 2,
+          score: 0,
           tags: allTags,
-          // Apply manual scoring values if manual mode
-          ...(newIdea.scoringMethod === 'manual' && {
-            reach: newIdea.reach || 100,
-            impact: newIdea.impact || 3,
-            confidence: newIdea.confidence || 0.8,
-            effort: newIdea.effort || 2
-          })
-        });
+          createdAt: new Date().toISOString()
+        };
+        
+        ideaWithDefaults.score = calculateScore(ideaWithDefaults, model);
+        newIdeas.push(ideaWithDefaults);
       }
     });
 
     if (newIdeas.length === 0) {
-      showMessage('No valid ideas found. Please check the format.', 'error');
+      showMessage('No valid ideas found. Please check the format.');
       return;
     }
 
-    // Calculate scores for new ideas before adding them
-    const newIdeasWithScores = newIdeas.map(idea => ({
-      ...idea,
-      score: calculateScore(idea, model)
-    }));
-    setIdeas(prev => [...prev, ...newIdeasWithScores]);
-    showMessage(`Added ${newIdeas.length} idea${newIdeas.length === 1 ? '' : 's'} successfully!`);
+    // Save ideas to database
+    try {
+      for (const idea of newIdeas) {
+        await ideasService.create({
+          title: idea.title,
+          notes: idea.notes || null,
+          reach: idea.reach || null,
+          impact: idea.impact,
+          confidence: idea.confidence,
+          effort: idea.effort,
+          score: idea.score,
+          tags: idea.tags || null
+        });
+      }
+      
+      setIdeas(prev => [...prev, ...newIdeas]);
+      showMessage(`Added ${newIdeas.length} idea${newIdeas.length === 1 ? '' : 's'} successfully!`);
+    } catch (error) {
+      console.error('Error saving ideas:', error);
+      showMessage('Error saving ideas to database');
+    }
     
     // Reset form
     setNewIdea({

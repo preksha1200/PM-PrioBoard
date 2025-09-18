@@ -228,12 +228,14 @@ export default function App() {
 
   // Recalculate scores when model changes
   useEffect(() => {
-    setIdeas(prevIdeas => 
-      prevIdeas.map(idea => ({
-        ...idea,
-        score: calculateScore(idea, model)
-      }))
-    );
+    if (ideas.length > 0) {
+      setIdeas(prevIdeas => 
+        prevIdeas.map(idea => ({
+          ...idea,
+          score: calculateScore(idea, model)
+        }))
+      );
+    }
   }, [model]);
 
   const showMessage = (msg: string) => {

@@ -316,7 +316,8 @@ export default function App() {
       setIdeas(formattedIdeas);
     } catch (error) {
       console.error('Error loading ideas:', error);
-      showMessage('Error loading ideas from database');
+      setMessage('Error loading ideas from database');
+      setTimeout(() => setMessage(''), 3000);
     }
   }, []);
 

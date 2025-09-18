@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { generateAIScores } from './services/aiService';
+import { useAuth } from './contexts/AuthContext';
+import { Auth } from './components/Auth';
+import { ideasService, productProfileService } from './services/database';
 import ProductProfile from './ProductProfile';
 
 // Types
@@ -19,27 +22,42 @@ interface Idea {
 type ScoringModel = 'ICE' | 'RICE';
 
 // Utility functions
-// Helper function to retrieve Product Profile context for AI scoring
-const getProductProfileContext = () => {
+// Helper function to retrieve Product Profile context for AI scoring from database
+const getProductProfileContext = async () => {
   try {
-    const savedProfile = localStorage.getItem('pm_prioboard_product_profile');
-    if (savedProfile) {
-      const profileData = JSON.parse(savedProfile);
+    const profiles = await productProfileService.getAll();
+    const profile = profiles[0]; // Get the first/main product profile
+    
+    console.log('🔍 Product Profile database data:', profile ? 'Found' : 'Not found');
+    
+    if (profile) {
+      console.log('📊 Product Profile data loaded:', {
+        productName: profile.product_name || 'Not set',
+        oneLiner: profile.one_liner || 'Not set',
+        industry: profile.business_context?.industry || 'Not set',
+        businessModel: profile.business_context?.businessModel || 'Not set'
+      });
+      
       // Extract relevant context for AI scoring
-      return {
-        productName: profileData.productName,
-        oneLiner: profileData.oneLiner,
-        detailedDescription: profileData.detailedDescription,
-        northStarMetric: profileData.northStarMetric,
-        audienceScale: profileData.audienceScale,
-        businessContext: profileData.businessContext,
-        funnelChannels: profileData.funnelChannels,
-        teamEffortUnits: profileData.teamEffortUnits,
-        constraintsRisk: profileData.constraintsRisk
+      const context = {
+        productName: profile.product_name,
+        oneLiner: profile.one_liner || undefined,
+        detailedDescription: profile.detailed_description || undefined,
+        northStarMetric: profile.north_star_metric,
+        audienceScale: profile.audience_scale,
+        businessContext: profile.business_context,
+        funnelChannels: profile.funnel_channels,
+        teamEffortUnits: profile.team_effort_units,
+        constraintsRisk: profile.constraints_risk
       };
+      
+      console.log('🚀 Passing Product Profile context to AI:', context);
+      return context;
+    } else {
+      console.log('⚠️ No Product Profile data found in database');
     }
   } catch (error) {
-    console.warn('Error retrieving Product Profile context:', error);
+    console.warn('❌ Error retrieving Product Profile context:', error);
   }
   return undefined;
 };
@@ -110,6 +128,7 @@ function createSampleIdeas(): Idea[] {
 }
 
 export default function App() {
+  const { user, loading, signOut } = useAuth();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [model, setModel] = useState<ScoringModel>('ICE');
   const [currentPage, setCurrentPage] = useState<'main' | 'product-profile'>('main');
@@ -147,15 +166,65 @@ export default function App() {
   // Chart point details modal state
   const [selectedIdea, setSelectedIdea] = useState<Idea | null>(null);
 
-  // Load sample data on mount
+  // Show loading screen while checking authentication
+  if (loading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f8fafc'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '4px solid #e5e7eb',
+            borderTop: '4px solid #457B9D',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 1rem'
+          }} />
+          <p style={{ color: '#6b7280' }}>Loading PM PrioBoard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show authentication screen if user is not logged in
+  if (!user) {
+    return <Auth />;
+  }
+
+  // Load ideas from database on mount
   useEffect(() => {
-    const sampleIdeas = createSampleIdeas();
-    const ideasWithScores = sampleIdeas.map(idea => ({
-      ...idea,
-      score: calculateScore(idea, model)
-    }));
-    setIdeas(ideasWithScores);
-  }, []);
+    if (user) {
+      loadIdeasFromDatabase();
+    }
+  }, [user]);
+
+  const loadIdeasFromDatabase = async () => {
+    try {
+      const dbIdeas = await ideasService.getAll();
+      const formattedIdeas: Idea[] = dbIdeas.map(idea => ({
+        id: idea.id,
+        title: idea.title,
+        notes: idea.notes || '',
+        reach: idea.reach || undefined,
+        impact: idea.impact,
+        confidence: idea.confidence,
+        effort: idea.effort,
+        score: idea.score,
+        tags: idea.tags || [],
+        createdAt: idea.created_at
+      }));
+      setIdeas(formattedIdeas);
+    } catch (error) {
+      console.error('Error loading ideas:', error);
+      showMessage('Error loading ideas from database');
+    }
+  };
 
   // Recalculate scores when model changes
   useEffect(() => {
@@ -172,7 +241,7 @@ export default function App() {
     setTimeout(() => setMessage(''), 3000);
   };
 
-  const handleAddIdea = (e: React.FormEvent) => {
+  const handleAddIdea = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!newIdea.title.trim()) {
@@ -180,37 +249,61 @@ export default function App() {
       return;
     }
 
-    const idea: Idea = {
-      id: generateId(),
-      title: newIdea.title.trim(),
-      notes: newIdea.notes.trim(),
-      reach: model === 'RICE' ? newIdea.reach : undefined,
-      impact: newIdea.impact,
-      confidence: newIdea.confidence,
-      effort: newIdea.effort,
-      score: 0,
-      tags: newIdea.tags || [],
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const score = calculateScore({
+        impact: newIdea.impact,
+        confidence: newIdea.confidence,
+        effort: newIdea.effort,
+        reach: model === 'RICE' ? newIdea.reach : undefined
+      } as Idea, model);
 
-    idea.score = calculateScore(idea, model);
-    setIdeas(prev => [...prev, idea]);
-    
-    // Reset form
-    setNewIdea({
-      title: '',
-      notes: '',
-      reach: 100,
-      impact: 3,
-      confidence: 0.8,
-      effort: 2,
-      tags: [],
-      bulkText: '',
-      defaultTags: [],
-      scoringMethod: 'manual'
-    });
-    
-    showMessage('Idea added successfully!');
+      const ideaData = {
+        title: newIdea.title,
+        notes: newIdea.notes || null,
+        reach: model === 'RICE' ? newIdea.reach : null,
+        impact: newIdea.impact,
+        confidence: newIdea.confidence,
+        effort: newIdea.effort,
+        score: score,
+        tags: newIdea.tags.length > 0 ? newIdea.tags : null
+      };
+
+      const savedIdea = await ideasService.create(ideaData);
+      
+      const formattedIdea: Idea = {
+        id: savedIdea.id,
+        title: savedIdea.title,
+        notes: savedIdea.notes || '',
+        reach: savedIdea.reach || undefined,
+        impact: savedIdea.impact,
+        confidence: savedIdea.confidence,
+        effort: savedIdea.effort,
+        score: savedIdea.score,
+        tags: savedIdea.tags || [],
+        createdAt: savedIdea.created_at
+      };
+
+      setIdeas(prev => [...prev, formattedIdea]);
+      
+      // Reset form
+      setNewIdea({
+        title: '',
+        notes: '',
+        reach: 100,
+        impact: 3,
+        confidence: 0.8,
+        effort: 2,
+        tags: [],
+        bulkText: '',
+        defaultTags: [],
+        scoringMethod: 'manual'
+      });
+      
+      showMessage('Idea added successfully!');
+    } catch (error) {
+      console.error('Error adding idea:', error);
+      showMessage('Error adding idea to database');
+    }
   };
 
   const handleDeleteIdea = (id: string) => {
@@ -224,11 +317,17 @@ export default function App() {
     }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deleteConfirmation.ideaId) {
-      setIdeas(prev => prev.filter(idea => idea.id !== deleteConfirmation.ideaId));
-      showMessage('Idea deleted successfully');
-      setDeleteConfirmation({ isOpen: false, ideaId: null, ideaTitle: '' });
+      try {
+        await ideasService.delete(deleteConfirmation.ideaId);
+        setIdeas(prev => prev.filter(idea => idea.id !== deleteConfirmation.ideaId));
+        setDeleteConfirmation({ isOpen: false, ideaId: null, ideaTitle: '' });
+        showMessage('Idea deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting idea:', error);
+        showMessage('Error deleting idea from database');
+      }
     }
   };
 
@@ -236,163 +335,52 @@ export default function App() {
     setDeleteConfirmation({ isOpen: false, ideaId: null, ideaTitle: '' });
   };
 
-  // Edit functionality
-  const handleEditIdea = (idea: Idea) => {
-    setEditingId(idea.id);
-    setEditForm({
-      title: idea.title,
-      notes: idea.notes || '',
-      reach: idea.reach,
-      impact: idea.impact,
-      confidence: idea.confidence,
-      effort: idea.effort,
-      tags: idea.tags
-    });
-  };
-
-  const handleSaveEdit = () => {
-    if (!editingId || !editForm.title) return;
-    
-    setIdeas(prev => prev.map(idea => {
-      if (idea.id === editingId) {
-        const updatedIdea = {
-          ...idea,
-          title: editForm.title || idea.title,
-          notes: editForm.notes || '',
-          reach: editForm.reach || idea.reach,
-          impact: editForm.impact || idea.impact,
-          confidence: editForm.confidence || idea.confidence,
-          effort: editForm.effort || idea.effort,
-          tags: editForm.tags || idea.tags
-        };
-        updatedIdea.score = calculateScore(updatedIdea, model);
-        return updatedIdea;
-      }
-      return idea;
-    }));
-    
-    setEditingId(null);
-    setEditForm({});
-    showMessage('Idea updated successfully!');
-  };
-
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setEditForm({});
-  };
-
-  // Bulk Add functionality
-  const parseIdeaFromText = (text: string) => {
-    const parts = text.split('|').map(part => part.trim());
-    const idea: any = {
-      title: parts[0] || text.trim(),
-      notes: '',
-      reach: newIdea.reach,
-      impact: newIdea.impact,
-      confidence: newIdea.confidence,
-      effort: newIdea.effort,
-      tags: []
-    };
-
-    // Parse advanced format: Title | I:5 | C:0.8 | E:1.5 | R:100 | T:feature,ui
-    for (let i = 1; i < parts.length; i++) {
-      const part = parts[i];
-      if (part.startsWith('I:')) {
-        idea.impact = parseInt(part.substring(2)) || newIdea.impact;
-      } else if (part.startsWith('C:')) {
-        let confidenceStr = part.substring(2).trim();
-        if (confidenceStr.endsWith('%')) {
-          idea.confidence = parseFloat(confidenceStr.slice(0, -1)) / 100 || newIdea.confidence;
-        } else {
-          idea.confidence = parseFloat(confidenceStr) || newIdea.confidence;
-        }
-      } else if (part.startsWith('E:')) {
-        idea.effort = parseFloat(part.substring(2)) || newIdea.effort;
-      } else if (part.startsWith('R:')) {
-        idea.reach = parseInt(part.substring(2)) || newIdea.reach;
-      } else if (part.startsWith('T:')) {
-        idea.tags = part.substring(2).split(',').map(tag => tag.trim()).filter(Boolean);
-      }
-    }
-
-    return idea;
-  };
-
-  const handleGenerateAIScoring = async () => {
-    if (!newIdea.bulkText?.trim()) {
-      showMessage('Please enter some ideas first to generate AI scoring');
-      return;
-    }
-
-    showMessage('AI Scoring generation started...');
-    
-    try {
-      const lines = newIdea.bulkText.split('\n').filter(line => line.trim());
-      const newIdeas: Idea[] = [];
-
-      for (const line of lines) {
-        const parsedIdea = parseIdeaFromText(line.trim());
-        if (parsedIdea) {
-          // Apply default tags if specified
-          const allTags = [...(parsedIdea.tags || []), ...(newIdea.defaultTags || [])]
-            .filter((tag, index, arr) => arr.indexOf(tag) === index); // Remove duplicates
-          
-          // Generate AI-suggested scores with Product Profile context for more informed analysis
-          const productContext = getProductProfileContext();
-          const aiScores = await generateAIScores(parsedIdea.title, parsedIdea.notes || '', productContext);
-          
-          newIdeas.push({
-            ...parsedIdea,
-            tags: allTags,
-            ...aiScores
-          });
-        }
-      }
-
-      if (newIdeas.length === 0) {
-        showMessage('No valid ideas found. Please check the format.');
-        return;
-      }
-
-      // Calculate scores for new ideas and store in preview
-      const newIdeasWithScores = newIdeas.map(idea => ({
-        ...idea,
-        score: calculateScore(idea, model)
-      }));
-      setAiScoredPreview(newIdeasWithScores);
-      showMessage(`AI generated scores for ${newIdeas.length} idea${newIdeas.length === 1 ? '' : 's'}. Review below and click "Add Ideas" to confirm.`);
-    } catch (error) {
-      console.error('AI scoring failed:', error);
-      showMessage('AI scoring failed. Please try again.');
-    }
-  };
-
-
+  // ... (rest of the code remains the same)
 
   // Add AI-scored preview to main list
-  const handleAddAIScoredIdeas = () => {
+  const handleAddAIScoredIdeas = async () => {
     if (aiScoredPreview.length === 0) {
       showMessage('No AI-scored ideas to add. Generate AI scoring first.');
       return;
     }
 
-    setIdeas(prev => [...prev, ...aiScoredPreview]);
-    showMessage(`Added ${aiScoredPreview.length} AI-scored idea${aiScoredPreview.length === 1 ? '' : 's'} successfully!`);
-    
-    // Clear preview and reset form
-    setAiScoredPreview([]);
-    setNewIdea({
-      title: '',
-      notes: '',
-      reach: 100,
-      impact: 3,
-      confidence: 0.8,
-      effort: 2,
-      tags: [],
-      bulkText: '',
-      defaultTags: [],
-      scoringMethod: 'manual'
-    });
+    try {
+      const ideaDataArray = aiScoredPreview.map(idea => ({
+        title: idea.title,
+        notes: idea.notes || null,
+        reach: idea.reach || null,
+        impact: idea.impact,
+        confidence: idea.confidence,
+        effort: idea.effort,
+        score: idea.score,
+        tags: idea.tags.length > 0 ? idea.tags : null
+      }));
+
+      const savedIdeas = await ideasService.createMany(ideaDataArray);
+      
+      const formattedIdeas: Idea[] = savedIdeas.map(idea => ({
+        id: idea.id,
+        title: idea.title,
+        notes: idea.notes || '',
+        reach: idea.reach || undefined,
+        impact: idea.impact,
+        confidence: idea.confidence,
+        effort: idea.effort,
+        score: idea.score,
+        tags: idea.tags || [],
+        createdAt: idea.created_at
+      }));
+
+      setIdeas(prev => [...prev, ...formattedIdeas]);
+      showMessage(`Added ${savedIdeas.length} AI-scored idea${savedIdeas.length === 1 ? '' : 's'} successfully!`);
+      setAiScoredPreview([]);
+      
+      // Clear bulk text
+      setNewIdea(prev => ({ ...prev, bulkText: '' }));
+    } catch (error) {
+      console.error('Error adding AI-scored ideas:', error);
+      showMessage('Error adding ideas to database');
+    }
   };
 
   const handleBulkAdd = () => {
@@ -839,14 +827,14 @@ export default function App() {
                     resize: 'vertical',
                     fontFamily: 'monospace'
                   }}
-                  placeholder="Enter one idea per line...&#10;&#10;Advanced format: Title | I:5 | C:0.8 | E:1.5 | R:100 | T:feature,ui&#10;Simple format: Just the idea title"
+                  placeholder="Enter one idea per line..."
                 />
                 <div style={{
                   fontSize: '0.75rem',
                   color: '#386FA4',
                   marginTop: '0.25rem'
                 }}>
-                  Advanced format: Title | I:impact | C:confidence | E:effort | R:reach | T:tags
+                  Advanced format: Title | I:Impact | C:Confidence | E:Effort | R:Reach | T:Tags
                 </div>
               </div>
 

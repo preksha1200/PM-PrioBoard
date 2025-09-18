@@ -303,7 +303,7 @@ export default function App() {
     if (user) {
       loadIdeasFromDatabase();
     }
-  }, [user]);
+  }, [user?.id]);
 
   const loadIdeasFromDatabase = async () => {
     try {

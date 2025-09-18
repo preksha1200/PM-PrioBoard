@@ -127,6 +127,52 @@ function createSampleIdeas(): Idea[] {
   ];
 }
 
+// Static styles to prevent re-renders
+const loadingContainerStyle = {
+  minHeight: '100vh',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: '#f8fafc'
+} as const;
+
+const loadingContentStyle = { textAlign: 'center' } as const;
+
+const spinnerStyle = {
+  width: '40px',
+  height: '40px',
+  border: '4px solid #e5e7eb',
+  borderTop: '4px solid #457B9D',
+  borderRadius: '50%',
+  animation: 'spin 1s linear infinite',
+  margin: '0 auto 1rem'
+} as const;
+
+const loadingTextStyle = { color: '#6b7280' } as const;
+
+// Main app container styles
+const appContainerStyle = {
+  minHeight: '100vh',
+  backgroundColor: '#f8fafc',
+  fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
+} as const;
+
+const headerStyle = {
+  backgroundColor: '#ffffff',
+  borderBottom: '1px solid #e2e8f0',
+  padding: '1rem 0'
+} as const;
+
+const headerContentStyle = {
+  maxWidth: '1600px',
+  margin: '0 auto',
+  padding: '0 3rem',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%'
+} as const;
+
 export default function App() {
   const { user, loading, signOut } = useAuth();
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -169,24 +215,10 @@ export default function App() {
   // Show loading screen while checking authentication
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f8fafc'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            border: '4px solid #e5e7eb',
-            borderTop: '4px solid #457B9D',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 1rem'
-          }} />
-          <p style={{ color: '#6b7280' }}>Loading PM PrioBoard...</p>
+      <div style={loadingContainerStyle}>
+        <div style={loadingContentStyle}>
+          <div style={spinnerStyle} />
+          <p style={loadingTextStyle}>Loading PM PrioBoard...</p>
         </div>
       </div>
     );
@@ -690,26 +722,10 @@ export default function App() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#f8fafc',
-      fontFamily: 'Inter, system-ui, -apple-system, sans-serif'
-    }}>
+    <div style={appContainerStyle}>
       {/* Header */}
-      <header style={{
-        backgroundColor: '#ffffff',
-        borderBottom: '1px solid #e2e8f0',
-        padding: '1rem 0'
-      }}>
-        <div style={{
-          maxWidth: '1600px',
-          margin: '0 auto',
-          padding: '0 3rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '100%'
-        }}>
+      <header style={headerStyle}>
+        <div style={headerContentStyle}>
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <h1 style={{
               fontSize: '1.5rem',

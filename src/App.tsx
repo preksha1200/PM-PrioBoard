@@ -379,7 +379,7 @@ export default function App() {
   }, [model]);
 
   // Generate AI scoring for ideas
-  const handleGenerateAIScoring = async () => {
+  const handleGenerateAIScoring = useCallback(async () => {
     if (!newIdea.bulkText.trim()) {
       showMessage('Please enter some ideas first');
       return;
@@ -418,15 +418,15 @@ export default function App() {
       console.error('Error generating AI scores:', error);
       showMessage('Error generating AI scores');
     }
-  };
+  }, [newIdea.bulkText, showMessage]);
 
   // Edit functionality
-  const handleEditIdea = (idea: Idea) => {
+  const handleEditIdea = useCallback((idea: Idea) => {
     setEditingId(idea.id);
     setEditForm({ ...idea });
-  };
+  }, []);
 
-  const handleSaveEdit = async () => {
+  const handleSaveEdit = useCallback(async () => {
     if (!editingId || !editForm.title?.trim()) return;
 
     try {
@@ -460,14 +460,14 @@ export default function App() {
       console.error('Error updating idea:', error);
       showMessage('Error updating idea');
     }
-  };
+  }, [editingId, editForm, ideas, showMessage]);
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = useCallback(() => {
     setEditingId(null);
     setEditForm({});
-  };
+  }, []);
 
-  const handleAddIdea = async (e: React.FormEvent) => {
+  const handleAddIdea = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!newIdea.title.trim()) {
@@ -530,9 +530,9 @@ export default function App() {
       console.error('Error adding idea:', error);
       showMessage('Error adding idea to database');
     }
-  };
+  }, [newIdea, model, showMessage]);
 
-  const handleDeleteIdea = (id: string) => {
+  const handleDeleteIdea = useCallback((id: string) => {
     const idea = ideas.find(i => i.id === id);
     if (idea) {
       setDeleteConfirmation({
@@ -541,9 +541,9 @@ export default function App() {
         ideaTitle: idea.title
       });
     }
-  };
+  }, [ideas]);
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = useCallback(async () => {
     if (deleteConfirmation.ideaId) {
       try {
         await ideasService.delete(deleteConfirmation.ideaId);
@@ -555,16 +555,16 @@ export default function App() {
         showMessage('Error deleting idea from database');
       }
     }
-  };
+  }, [deleteConfirmation.ideaId, ideas, showMessage]);
 
-  const handleCancelDelete = () => {
+  const handleCancelDelete = useCallback(() => {
     setDeleteConfirmation({ isOpen: false, ideaId: null, ideaTitle: '' });
-  };
+  }, []);
 
   // ... (rest of the code remains the same)
 
   // Add AI-scored preview to main list
-  const handleAddAIScoredIdeas = async () => {
+  const handleAddAIScoredIdeas = useCallback(async () => {
     if (aiScoredPreview.length === 0) {
       showMessage('No AI-scored ideas to add. Generate AI scoring first.');
       return;
@@ -607,9 +607,9 @@ export default function App() {
       console.error('Error adding AI-scored ideas:', error);
       showMessage('Error adding ideas to database');
     }
-  };
+  }, [aiScoredPreview, ideas, showMessage]);
 
-  const handleBulkAdd = async (e: React.FormEvent) => {
+  const handleBulkAdd = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (newIdea.scoringMethod === 'ai') {
@@ -691,9 +691,9 @@ export default function App() {
       defaultTags: [],
       scoringMethod: 'manual'
     });
-  };
+  }, [newIdea, parseIdeaFromText, showMessage]);
 
-  const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCSVUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -746,9 +746,9 @@ export default function App() {
 
     reader.readAsText(file);
     event.target.value = ''; // Reset file input
-  };
+  }, [parseIdeaFromText, showMessage]);
 
-  const handleExportCSV = () => {
+  const handleExportCSV = useCallback(() => {
     const headers = model === 'RICE' 
       ? ['Title', 'Reach', 'Impact', 'Confidence', 'Effort', 'Score', 'Tags']
       : ['Title', 'Impact', 'Confidence', 'Effort', 'Score', 'Tags'];
@@ -780,7 +780,7 @@ export default function App() {
     URL.revokeObjectURL(url);
     
     showMessage('CSV exported successfully!');
-  };
+  }, [model, ideas, showMessage]);
 
 
   // Handle page navigation

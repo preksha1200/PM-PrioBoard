@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { generateAIScores } from './services/aiService';
 import { useAuth } from './contexts/AuthContext';
 import { Auth } from './components/Auth';
@@ -298,14 +298,7 @@ export default function App() {
     return <Auth />;
   }
 
-  // Load ideas from database on mount
-  useEffect(() => {
-    if (user) {
-      loadIdeasFromDatabase();
-    }
-  }, [user?.id]);
-
-  const loadIdeasFromDatabase = async () => {
+  const loadIdeasFromDatabase = useCallback(async () => {
     try {
       const dbIdeas = await ideasService.getAll();
       const formattedIdeas: Idea[] = dbIdeas.map(idea => ({
@@ -325,7 +318,14 @@ export default function App() {
       console.error('Error loading ideas:', error);
       showMessage('Error loading ideas from database');
     }
-  };
+  }, []);
+
+  // Load ideas from database on mount
+  useEffect(() => {
+    if (user) {
+      loadIdeasFromDatabase();
+    }
+  }, [user?.id, loadIdeasFromDatabase]);
 
   // Memoize sorted ideas to prevent unnecessary re-renders
   const sortedIdeas = useMemo(() => {
@@ -337,13 +337,13 @@ export default function App() {
       .sort((a, b) => b.score - a.score);
   }, [ideas, model]);
 
-  const showMessage = (msg: string) => {
+  const showMessage = useCallback((msg: string) => {
     setMessage(msg);
     setTimeout(() => setMessage(''), 3000);
-  };
+  }, []);
 
   // Parse structured text format: "Title | I:5 | C:0.8 | E:1.5 | R:100 | T:feature,ui"
-  const parseIdeaFromText = (text: string): Partial<Idea> | null => {
+  const parseIdeaFromText = useCallback((text: string): Partial<Idea> | null => {
     if (!text.trim()) return null;
     
     const parts = text.split('|').map(p => p.trim());
@@ -376,7 +376,7 @@ export default function App() {
     }
     
     return idea;
-  };
+  }, [model]);
 
   // Generate AI scoring for ideas
   const handleGenerateAIScoring = async () => {

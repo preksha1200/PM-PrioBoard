@@ -326,7 +326,7 @@ export default function App() {
     if (user) {
       loadIdeasFromDatabase();
     }
-  }, [user?.id, loadIdeasFromDatabase]);
+  }, [user?.id]);
 
   // Memoize sorted ideas to prevent unnecessary re-renders
   const sortedIdeas = useMemo(() => {

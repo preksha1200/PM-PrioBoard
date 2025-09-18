@@ -21,7 +21,7 @@ export default function IncrementalApp() {
   const { user, loading } = useAuth();
   const [ideas, setIdeas] = useState<Idea[]>([]);
   const [message, setMessage] = useState('');
-
+console.log('preksha')
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -66,7 +66,7 @@ export default function IncrementalApp() {
     if (user) {
       loadIdeas();
     }
-  }, [user?.id, loadIdeas]);
+  }, [user?.id]);
 
   return (
     <div style={{ padding: '2rem' }}>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { generateAIScores } from './services/aiService';
 import { useAuth } from './contexts/AuthContext';
 import { Auth } from './components/Auth';
@@ -226,17 +226,15 @@ export default function App() {
     }
   };
 
-  // Recalculate scores when model changes
-  useEffect(() => {
-    if (ideas.length > 0) {
-      setIdeas(prevIdeas => 
-        prevIdeas.map(idea => ({
-          ...idea,
-          score: calculateScore(idea, model)
-        }))
-      );
-    }
-  }, [model]);
+  // Memoize sorted ideas to prevent unnecessary re-renders
+  const sortedIdeas = useMemo(() => {
+    return [...ideas]
+      .map(idea => ({
+        ...idea,
+        score: calculateScore(idea, model)
+      }))
+      .sort((a, b) => b.score - a.score);
+  }, [ideas, model]);
 
   const showMessage = (msg: string) => {
     setMessage(msg);
@@ -683,7 +681,6 @@ export default function App() {
     showMessage('CSV exported successfully!');
   };
 
-  const sortedIdeas = [...ideas].sort((a, b) => b.score - a.score);
 
   // Handle page navigation
   if (currentPage === 'product-profile') {

@@ -173,6 +173,75 @@ const headerContentStyle = {
   width: '100%'
 } as const;
 
+// Static styles for all inline objects to prevent re-renders
+const headerLeftStyle = { display: 'flex', gap: '1rem', alignItems: 'center' } as const;
+const titleStyle = {
+  fontSize: '1.5rem',
+  fontWeight: 'bold',
+  color: '#1e293b'
+} as const;
+const toggleContainerStyle = {
+  position: 'relative',
+  display: 'inline-flex',
+  backgroundColor: 'white',
+  borderRadius: '12px',
+  padding: '4px',
+  border: '1px solid #e2e8f0'
+} as const;
+const buttonBaseStyle = {
+  position: 'relative',
+  zIndex: 1,
+  padding: '8px 20px',
+  backgroundColor: 'transparent',
+  color: 'black',
+  border: 'none',
+  borderRadius: '8px',
+  cursor: 'pointer',
+  fontSize: '0.875rem',
+  fontWeight: '600',
+  transition: 'color 0.2s ease-in-out',
+  minWidth: '60px'
+} as const;
+const headerRightStyle = { display: 'flex', gap: '1rem', alignItems: 'center' } as const;
+const profileButtonStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.5rem',
+  padding: '0.5rem 1rem',
+  backgroundColor: '#F8F4E3',
+  color: 'black',
+  border: '1px solid #F8F4E3',
+  borderRadius: '0.375rem',
+  cursor: 'pointer',
+  fontSize: '0.875rem',
+  fontWeight: '500',
+  transition: 'all 0.2s ease-in-out'
+} as const;
+const messageStyle = {
+  position: 'fixed',
+  top: '1rem',
+  right: '1rem',
+  backgroundColor: '#10b981',
+  color: 'white',
+  padding: '0.75rem 1rem',
+  borderRadius: '0.375rem',
+  zIndex: 1000,
+  fontSize: '0.875rem'
+} as const;
+const mainContentStyle = {
+  maxWidth: '1400px',
+  margin: '0 auto',
+  padding: '2rem 2rem',
+  display: 'grid',
+  gap: '3rem'
+} as const;
+const addSectionStyle = {
+  backgroundColor: '#ffffff',
+  border: '1px solid #e2e8f0',
+  borderRadius: '8px',
+  overflow: 'hidden'
+} as const;
+
 export default function App() {
   const { user, loading, signOut } = useAuth();
   const [ideas, setIdeas] = useState<Idea[]>([]);
@@ -726,24 +795,13 @@ export default function App() {
       {/* Header */}
       <header style={headerStyle}>
         <div style={headerContentStyle}>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <h1 style={{
-              fontSize: '1.5rem',
-              fontWeight: 'bold',
-              color: '#1e293b'
-            }}>
+          <div style={headerLeftStyle}>
+            <h1 style={titleStyle}>
               PM PrioBoard
             </h1>
             
             {/* Beautiful ICE/RICE Toggle Button */}
-            <div style={{
-              position: 'relative',
-              display: 'inline-flex',
-              backgroundColor: 'white',
-              borderRadius: '12px',
-              padding: '4px',
-              border: '1px solid #e2e8f0'
-            }}>
+            <div style={toggleContainerStyle}>
               {/* Sliding Background Indicator */}
               <div style={{
                 position: 'absolute',
@@ -760,20 +818,7 @@ export default function App() {
               {/* ICE Button */}
               <button
                 onClick={() => setModel('ICE')}
-                style={{
-                  position: 'relative',
-                  zIndex: 1,
-                  padding: '8px 20px',
-                  backgroundColor: 'transparent',
-                  color: 'black',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  transition: 'color 0.2s ease-in-out',
-                  minWidth: '60px'
-                }}
+                style={buttonBaseStyle}
               >
                 ICE
               </button>
@@ -781,44 +826,18 @@ export default function App() {
               {/* RICE Button */}
               <button
                 onClick={() => setModel('RICE')}
-                style={{
-                  position: 'relative',
-                  zIndex: 1,
-                  padding: '8px 20px',
-                  backgroundColor: 'transparent',
-                  color: 'black',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  transition: 'color 0.2s ease-in-out',
-                  minWidth: '60px'
-                }}
+                style={buttonBaseStyle}
               >
                 RICE
               </button>
             </div>
           </div>
           
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div style={headerRightStyle}>
             {/* Product Profile Button */}
             <button
               onClick={() => setCurrentPage('product-profile')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.5rem 1rem',
-                backgroundColor: '#F8F4E3',
-                color: 'black',
-                border: '1px solid #F8F4E3',
-                borderRadius: '0.375rem',
-                cursor: 'pointer',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                transition: 'all 0.2s ease-in-out'
-              }}
+              style={profileButtonStyle}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#f0ead6';
                 e.currentTarget.style.transform = 'translateY(-1px)';
@@ -839,20 +858,7 @@ export default function App() {
             
             <button
               onClick={handleExportCSV}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.5rem 1rem',
-                backgroundColor: '#F8F4E3',
-                color: 'black',
-                border: '1px solid #F8F4E3',
-                borderRadius: '0.375rem',
-                cursor: 'pointer',
-                fontSize: '0.875rem',
-                fontWeight: '500',
-                transition: 'all 0.2s ease-in-out'
-              }}
+              style={profileButtonStyle}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#f0ead6';
                 e.currentTarget.style.transform = 'translateY(-1px)';
@@ -878,35 +884,14 @@ export default function App() {
 
       {/* Message */}
       {message && (
-        <div style={{
-          position: 'fixed',
-          top: '1rem',
-          right: '1rem',
-          backgroundColor: '#10b981',
-          color: 'white',
-          padding: '0.75rem 1rem',
-          borderRadius: '0.375rem',
-          zIndex: 1000,
-          fontSize: '0.875rem'
-        }}>
+        <div style={messageStyle}>
           {message}
         </div>
       )}
 
-      <div style={{
-        maxWidth: '1400px',
-        margin: '0 auto',
-        padding: '2rem 2rem',
-        display: 'grid',
-        gap: '3rem'
-      }}>
+      <div style={mainContentStyle}>
         {/* Enhanced Add Ideas Section */}
-        <div style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #e2e8f0',
-          borderRadius: '8px',
-          overflow: 'hidden'
-        }}>
+        <div style={addSectionStyle}>
           {/* Collapsible Header */}
           <div style={{
             padding: '1rem 1.5rem',
